@@ -13,7 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('enderecos', function (Blueprint $table) {
+            $table->id('EnderecosID');
+            $table->foreignID('userID')->constrained('users', 'UserID')->onDelete('cascade');;
+            $table->string('apelido', 55);
+            $table->string('rua', 55);
+            $table->integer('numero');
+            $table->string('bairro', 55);
+            $table->string('cep', 11);
+            $table->string('cidade', 55);
+            $table->string('estado', 55);
+            $table->string('pais', 55);
+        });
     }
 
     /**

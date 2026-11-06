@@ -13,7 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('habilidades', function (Blueprint $table) {
+            $table->id('HabilidadeID');
+            $table->foreignId('TecnicoID')->constrained('tecnicos', 'TecnicoID')->onDelete('cascade');
+            $table->text('descricao');
+            $table->binary('cursos')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
