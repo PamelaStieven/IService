@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Usuario;
+use App\Models\Usuario; 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UsuarioFactory extends Factory
@@ -14,10 +14,10 @@ class UsuarioFactory extends Factory
         return [
             'nome_razao'      => $this->faker->name(),
             'email'           => $this->faker->unique()->safeEmail(),
-            'telefone'        => $this->faker->phoneNumber(),
-            'tipo'            => $this->faker->randomElement(['cliente', 'funcionario']),
             'cpf_cnpj'        => $this->faker->numerify('###.###.###-##'),
-            'data_nascimento' => $this->faker->date('Y-m-d', '-18 years'),
+            'data_nascimento' => $this->faker->dateTimeBetween('-60 years', '-18 years'),
+            'telefone'        => $this->faker->numerify('(##)9####-####'),
+            'tipo'            => $this->faker->randomElement(['Técnico', 'Administrador', 'Usuário']),
         ];
     }
 }
