@@ -11,7 +11,35 @@ class User extends Model
 
     protected $table = 'User';
     protected $primaryKey = 'UserID';
-    public $timestamps = false; // Remova se a tabela tiver created_at e updated_at
+    public $timestamps = false; 
+
+    protected $fillable = [
+        'nome_razao',
+        'email',
+        'cpf_cnpj',
+        'data_nascimento',
+        'telefone',
+        'tipo',
+    ];
+
+    protected $casts = [
+        'data_nascimento' => 'datetime',
+    ];
+}
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class User extends Model
+{
+    use HasFactory;
+
+    protected $table = 'User';
+    protected $primaryKey = 'UserID';
+    public $timestamps = false; 
 
     protected $fillable = [
         'nome_razao',
