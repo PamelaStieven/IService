@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Enderecos;
 
-class EnderecosController extends Controller
+class EnderecoController extends Controller
 {
     public function index()
     {
