@@ -7,7 +7,7 @@ use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EnderecosFactory extends Factory
-{
+{php artisan migrate
     protected $model = Enderecos::class;
 
     public function definition(): array
