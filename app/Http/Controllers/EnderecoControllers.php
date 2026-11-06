@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Enderecos;
 
-class EnderecoController extends Controller
+class EnderecosController extends Controller
 {
     public function index()
     {
@@ -75,7 +75,7 @@ class EnderecoController extends Controller
 
     public function destroy($id)
     {
-        Enderecos::destroy($id);
+        Endereco::destroy($id);
 
         return redirect()->route('enderecos.index')
             ->with('success', 'Registro removido com sucesso!');
