@@ -12,7 +12,7 @@ class Servico extends Model
 {
     use HasFactory;
 
-    protected $table = 'Servico';
+    protected $table = 'servico';    
     protected $primaryKey = 'ServicoID';
     public $timestamps = false;
 

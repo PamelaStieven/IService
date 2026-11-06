@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('item_servicos', function (Blueprint $table) {
+        Schema::create('itemservico', function (Blueprint $table) {
             $table->id('ItemServicoID');
-            $table->foreignId('AgendamentoID')->constrained('agendamentos', 'AgendamentoID')->onDelete('cascade');
-            $table->foreignId('ServicoID')->constrained('servicos', 'ServicoID')->onDelete('cascade');
+            $table->foreignId('AgendamentoID')->constrained('agendamento', 'AgendamentoID')->onDelete('cascade');
+            $table->foreignId('ServicoID')->constrained('servico', 'ServicoID')->onDelete('cascade');
             $table->text('descricao_item');
             $table->date('data_item');
             $table->timestamps();

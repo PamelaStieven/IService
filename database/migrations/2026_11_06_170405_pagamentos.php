@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('pagamentos', function (Blueprint $table) {
             $table->id('PagamentoID');
-            $table->foreignId('AgendamentoID')->nullable()->constrained('agendamentos', 'AgendamentoID')->onDelete('cascade');
+            $table->foreignId('AgendamentoID')->nullable()->constrained('agendamento', 'AgendamentoID')->onDelete('cascade');
             $table->foreignId('LocEquipID')->nullable()->constrained('locacao_equips', 'LocEquipID')->onDelete('cascade');
             $table->enum('metodo', ['PIX', 'Boleto']);
             $table->decimal('valor_total', 12, 2);

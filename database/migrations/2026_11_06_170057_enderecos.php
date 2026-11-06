@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('enderecos', function (Blueprint $table) {
             $table->id('EnderecosID');
-            $table->foreignID('userID')->constrained('users', 'UserID')->onDelete('cascade');;
+            $table->foreignID('userID')->constrained('usuario', 'UserID')->onDelete('cascade');;
             $table->string('apelido', 55);
             $table->string('rua', 55);
             $table->integer('numero');

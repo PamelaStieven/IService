@@ -11,7 +11,7 @@ class ItemServico extends Model
 {
     use HasFactory;
 
-    protected $table = 'ItemServico';
+    protected $table = 'itemservico';
     protected $primaryKey = 'ItemServicoID';
     public $timestamps = false;
 

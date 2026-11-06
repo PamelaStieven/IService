@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('locacao_equips', function (Blueprint $table) {
             $table->id('LocEquipID');
-            $table->foreignId('UserID')->constrained('users', 'UserID')->onDelete('cascade');
+            $table->foreignId('UserID')->constrained('usuario', 'UserID')->onDelete('cascade');
             $table->dateTime('data_retirada');
             $table->dateTime('data_devolucao');
             $table->timestamps();

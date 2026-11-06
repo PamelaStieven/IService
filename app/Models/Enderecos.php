@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Usuario;
 
-class Endereco extends Model
+class Enderecos extends Model
 {
     use HasFactory;
 
-    protected $table = 'Endereco';
-    protected $primaryKey = 'EnderecoID';
+    protected $table = 'Enderecos';
+    protected $primaryKey = 'EnderecosID';
     public $timestamps = false;
 
     protected $fillable = [

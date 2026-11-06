@@ -13,7 +13,7 @@ class EnderecosFactory extends Factory
     public function definition(): array
     {
         return [
-            'usuario_id' => Usuario::factory(),
+            'UserID' => Usuario::factory(),
             'apelido' => $this->faker->randomElement(['Casa', 'Trabalho', 'Apartamento']),
             'rua' => $this->faker->streetName(),
             'numero' => $this->faker->buildingNumber(),

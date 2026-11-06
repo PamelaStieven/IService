@@ -13,14 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('agendamentos', function (Blueprint $table) {
-            $table->id('AgendamentoID');
+        Schema::create('servico', function (Blueprint $table) {
+            $table->id('ServicoID');
             $table->foreignId('TecnicoID')->constrained('tecnicos', 'TecnicoID')->onDelete('cascade');
-            $table->foreignId('ServicoID')->constrained('servicos', 'ServicoID')->onDelete('cascade');
-            $table->foreignId('UserID')->constrained('users', 'UserID')->onDelete('cascade');
-            $table->dateTime('data_hora_inicio');
-            $table->dateTime('data_hora_fim');
-            $table->enum('status_servico', ['Aceito', 'Pendente', 'Cancelado', 'Concluido']);
+            $table->string('titulo', 55);
+            $table->string('categoria', 55);
+            $table->text('descricao');
+            $table->decimal('preco_base', 12, 2);
+            $table->enum('tipo_preco', ['Hora', 'Por Serviço']);
             $table->timestamps();
         });
     }
