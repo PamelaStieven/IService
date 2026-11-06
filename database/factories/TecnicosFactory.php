@@ -2,21 +2,23 @@
 
 namespace Database\Factories;
 
-use App\Models\Tecnico;
-use App\Models\Usuario;
+use App\Models\Servico;
+use App\Models\Tecnicos;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TecnicosFactory extends Factory
 {
-    protected $model = Tecnico::class;
+    protected $model = Tecnicos::class;
 
     public function definition(): array
     {
         return [
-            'UserID' => Usuario::factory()->state([
-                'tipo' => 'Técnico',
-            ]),
-            'documento' => $this->faker->bothify('DOC-#####'),
+            'TecnicoID'  => Tecnicos::factory(),
+            'titulo'     => $this->faker->jobTitle(),
+            'categoria'  => $this->faker->randomElement(['Manutenção', 'Instalação', 'Reparo']),
+            'descricao'  => $this->faker->paragraph(),
+            'preco_base' => $this->faker->randomFloat(2, 50, 500),
+            'tipo_preco' => $this->faker->randomElement(['hora', 'Por Serviço']),
         ];
     }
 }
