@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Tecnico;
+use App\Models\Usuario;
+use App\Models\Tecnicos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class TecnicoController extends Controller
+class TecnicosController extends Controller
 {
     public function index(Request $request)
     {
         $valor = $request->input('valor');
         $tipo  = $request->input('tipo', 'nome_razao');
 
-        $dados = Tecnico::with('user')
+        $dados = Tecnicos::with('user')
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
                 if (in_array($tipo, ['nome_razao', 'email', 'cpf_cnpj', 'telefone'])) {
                     $query->whereHas('user', function ($q) use ($tipo, $valor) {
@@ -39,7 +39,7 @@ class TecnicoController extends Controller
 
     public function create()
     {
-        $dado = new Tecnico();
+        $dado = new Tecnicos();
         return view('tecnico.form', compact('dado'));
     }
 
@@ -66,7 +66,7 @@ class TecnicoController extends Controller
         $this->validateForm($request);
 
         DB::transaction(function () use ($request) {
-            $user = User::create([
+            $user = Usuario::create([
                 'nome_razao'      => $request->input('nome_razao'),
                 'email'           => $request->input('email'),
                 'cpf_cnpj'        => $request->input('cpf_cnpj'),
@@ -75,7 +75,7 @@ class TecnicoController extends Controller
                 'tipo'            => 'Técnico',
             ]);
 
-            Tecnico::create([
+            Tecnicos::create([
                 'UserID'    => $user->UserID,
                 'documento' => $request->input('documento'),
             ]);
@@ -86,7 +86,7 @@ class TecnicoController extends Controller
 
     public function edit($id)
     {
-        $dado = Tecnico::with('user')->findOrFail($id);
+        $dado = Tecnicos::with('user')->findOrFail($id);
         return view('tecnico.form', compact('dado'));
     }
 
@@ -94,7 +94,7 @@ class TecnicoController extends Controller
     {
         $this->validateForm($request);
 
-        $tecnico = Tecnico::findOrFail($id);
+        $tecnico = Tecnicos::findOrFail($id);
 
         DB::transaction(function () use ($request, $tecnico) {
             $tecnico->user->update([
@@ -115,7 +115,7 @@ class TecnicoController extends Controller
 
     public function destroy($id)
     {
-        $tecnico = Tecnico::findOrFail($id);
+        $tecnico = Tecnicos::findOrFail($id);
 
         DB::transaction(function () use ($tecnico) {
             $user = $tecnico->user;
