@@ -16,7 +16,7 @@ use App\Http\Controllers\HabilidadeController;
 
 
 Route::get('/', function () {return view('welcome');});
-Route::resource('users', UserController::class);
+Route::resource('users', UsuarioController::class);
 Route::resource('equipamentos', EquipamentosController::class);
 Route::resource('tecnicos', TecnicosController::class);
 Route::resource('enderecos', EnderecosController::class);
