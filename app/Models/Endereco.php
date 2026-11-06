@@ -4,14 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Usuario;
 
-class Enderecos extends Model
+class Endereco extends Model
 {
     use HasFactory;
 
-    protected $table = 'enderecos'; 
+    protected $table = 'Endereco';
+    protected $primaryKey = 'EnderecoID';
+    public $timestamps = false;
 
-    protected $fillable = [ 
+    protected $fillable = [
+        'UserID',
         'apelido',
         'rua',
         'numero',
@@ -21,4 +25,9 @@ class Enderecos extends Model
         'estado',
         'pais',
     ];
+
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'UserID', 'UserID');
+    }
 }
