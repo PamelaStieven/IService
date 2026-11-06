@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('cpf_cnpj', 18)->unique();
             $table->dateTime('data_nascimento');
             $table->string('telefone', 14)->unique();
-            $table->string('tipo', ['Técnico', 'Administrador', 'Usuário']);
+            $table->enum('tipo', ['Técnico', 'Administrador', 'Usuário']);
             $table->timestamps();
         });
     }
