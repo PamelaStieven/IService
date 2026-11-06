@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\EquipamentosController;
 use App\Http\Controllers\TecnicosController;
 use App\Http\Controllers\EnderecosController;
