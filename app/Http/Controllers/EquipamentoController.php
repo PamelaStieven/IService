@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Equipamentos;
 use App\Models\Usuario;
 
-class EquipamentosController extends Controller
+class EquipamentoController extends Controller
 {
     public function index()
     {
