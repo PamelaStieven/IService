@@ -1,4 +1,3 @@
-
 @extends('main')
 @section('titulo', 'Listagem de Técnicos')
 

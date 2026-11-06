@@ -1,4 +1,3 @@
-
 @extends('main')
 @section('titulo', isset($dado->TecnicoID) ? 'Editar Técnico' : 'Novo Técnico')
 
