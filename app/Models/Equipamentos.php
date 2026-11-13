@@ -12,7 +12,7 @@ class Equipamentos extends Model
     protected $table = 'equipamentos';
 
     protected $fillable = [
-        'usuario_id',
+        'UserID',
         'nome',
         'modelo',
         'descricao_tecnica',
@@ -23,6 +23,6 @@ class Equipamentos extends Model
 
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'usuario_id');
+        return $this->belongsTo(Usuario::class, 'UserID');
     }
 }

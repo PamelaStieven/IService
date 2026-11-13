@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('servico', function (Blueprint $table) {
             $table->id('ServicoID');
             $table->foreignId('TecnicoID')->constrained('tecnicos', 'TecnicoID')->onDelete('cascade');
-            $table->string('titulo', 55);
+            $table->string('titulo', 100);
             $table->string('categoria', 55);
             $table->text('descricao');
             $table->decimal('preco_base', 12, 2);

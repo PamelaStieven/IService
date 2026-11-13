@@ -34,12 +34,12 @@ class Usuario extends Model
 
     public function enderecos()
     {
-        return $this->hasMany(Endereco::class, 'UserID', 'UserID');
+        return $this->hasMany(Enderecos::class, 'UserID', 'UserID');
     }
 
     public function equipamentos()
     {
-        return $this->hasMany(Equipamento::class, 'UserID', 'UserID');
+        return $this->hasMany(Equipamentos::class, 'UserID', 'UserID');
     }
 
     public function agendamentos()
