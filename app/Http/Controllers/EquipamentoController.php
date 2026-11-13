@@ -25,28 +25,13 @@ class EquipamentoController extends Controller
     private function validateForm(Request $request)
     {
         $request->validate([
-            'usuario_id' => 'required|exists:usuario,id',
+            'UserID' => 'required|exists:usuario,UserID',
             'nome' => 'required|max:55',
             'modelo' => 'required|max:55',
             'descricao_tecnica' => 'required',
             'data_compra' => 'required|date',
             'valor_aluguel' => 'required|numeric|min:0',
             'status' => 'required|in:Alugado,Disponível',
-        ], [
-            'usuario_id.required' => 'O :attribute é obrigatório.',
-            'usuario_id.exists' => 'O usuário informado não existe.',
-            'nome.required' => 'O :attribute é obrigatório.',
-            'nome.max' => 'O nome deve ter no máximo 55 caracteres.',
-            'modelo.required' => 'O :attribute é obrigatório.',
-            'modelo.max' => 'O modelo deve ter no máximo 55 caracteres.',
-            'descricao_tecnica.required' => 'A :attribute técnica é obrigatória.',
-            'data_compra.required' => 'A :attribute da compra é obrigatória.',
-            'data_compra.date' => 'Informe uma data válida.',
-            'valor_aluguel.required' => 'O :attribute é obrigatório.',
-            'valor_aluguel.numeric' => 'O :attribute deve ser numérico.',
-            'valor_aluguel.min' => 'O :attribute não pode ser negativo.',
-            'status.required' => 'O :attribute é obrigatório.',
-            'status.in' => 'Selecione um status válido.',
         ]);
     }
 
@@ -55,7 +40,7 @@ class EquipamentoController extends Controller
         $this->validateForm($request);
 
         Equipamentos::create($request->only([
-            'usuario_id',
+            'UserID',
             'nome',
             'modelo',
             'descricao_tecnica',
@@ -70,7 +55,7 @@ class EquipamentoController extends Controller
 
     public function edit($id)
     {
-        $dado = Equipamentos::findOrFail($id);
+        $dado = Equipamentos::where('EquipID', $id)->firstOrFail();
         $usuarios = Usuario::all();
 
         return view('equipamentos.form', compact('dado', 'usuarios'));
@@ -80,10 +65,10 @@ class EquipamentoController extends Controller
     {
         $this->validateForm($request);
 
-        $equipamento = Equipamentos::findOrFail($id);
+        $equipamento = Equipamentos::where('EquipID', $id)->firstOrFail();
 
         $equipamento->update($request->only([
-            'usuario_id',
+            'UserID',
             'nome',
             'modelo',
             'descricao_tecnica',
@@ -98,7 +83,8 @@ class EquipamentoController extends Controller
 
     public function destroy($id)
     {
-        Equipamentos::destroy($id);
+        $equipamento = Equipamentos::where('EquipID', $id)->firstOrFail();
+        $equipamento->delete();
 
         return redirect()->route('equipamentos.index')
             ->with('success', 'Equipamento removido com sucesso!');

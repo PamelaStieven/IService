@@ -1,5 +1,5 @@
 @extends('main')
-@section('titulo', isset($dado->id) ? 'Editar Equipamento' : 'Novo Equipamento')
+@section('titulo', isset($dado->EquipID) ? 'Editar Equipamento' : 'Novo Equipamento')
 
 @section('conteudo')
 
@@ -8,7 +8,7 @@
 
         <div class="card-header bg-primary text-white">
             <h4 class="mb-0">
-                {{ isset($dado->id) ? 'Editar Equipamento' : 'Novo Equipamento' }}
+                {{ isset($dado->EquipID) ? 'Editar Equipamento' : 'Novo Equipamento' }}
             </h4>
         </div>
 
@@ -24,25 +24,26 @@
                 </div>
             @endif
 
-            <form action="{{ isset($dado->id) ? route('equipamentos.update', $dado->id) : route('equipamentos.store') }}" method="POST">
+            <form action="{{ isset($dado->EquipID) ? route('equipamentos.update', $dado->EquipID) : route('equipamentos.store') }}" method="POST">
 
                 @csrf
 
-                @if(isset($dado->id))
+                @if(isset($dado->EquipID))
                     @method('PUT')
                 @endif
 
                 <div class="row g-3">
 
                     <div class="col-md-6">
-                        <label for="usuario_id" class="form-label">Usuário *</label>
+                        <label for="UserID" class="form-label">Usuário *</label>
 
-                        <select name="usuario_id" id="usuario_id" class="form-select" required>
+                        <!-- Alterado para UserID -->
+                        <select name="UserID" id="UserID" class="form-select" required>
                             <option value="">Selecione um usuário</option>
 
                             @foreach($usuarios as $usuario)
-                                <option value="{{ $usuario->id }}"
-                                    {{ old('usuario_id', $dado->usuario_id ?? '') == $usuario->id ? 'selected' : '' }}>
+                                <option value="{{ $usuario->UserID }}"
+                                    {{ old('UserID', $dado->UserID ?? '') == $usuario->UserID ? 'selected' : '' }}>
                                     {{ $usuario->nome }}
                                 </option>
                             @endforeach

@@ -13,10 +13,10 @@ class ServicoController extends Controller
         $valor = $request->input('valor');
         $tipo  = $request->input('tipo', 'titulo');
 
-        $dados = Servico::with('tecnico.user')
+        $dados = Servico::with('tecnico.usuario')
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
                 if ($tipo === 'tecnico') {
-                    $query->whereHas('tecnico.user', function ($q) use ($valor) {
+                    $query->whereHas('tecnico.usuario', function ($q) use ($valor) {
                         $q->where('nome_razao', 'like', '%' . $valor . '%');
                     });
                 } else {
@@ -39,7 +39,7 @@ class ServicoController extends Controller
     public function create()
     {
         $dado = new Servico();
-        $tecnicos = Tecnicos::with('user')->get();
+        $tecnicos = Tecnicos::with('usuario')->get();
         return view('servico.form', compact('dado', 'tecnicos'));
     }
 
@@ -75,7 +75,7 @@ class ServicoController extends Controller
     public function edit($id)
     {
         $dado = Servico::findOrFail($id);
-        $tecnicos = Tecnicos::with('user')->get();
+        $tecnicos = Tecnicos::with('usuario')->get();
         return view('servico.form', compact('dado', 'tecnicos'));
     }
 

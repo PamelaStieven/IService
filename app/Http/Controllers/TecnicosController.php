@@ -14,10 +14,10 @@ class TecnicosController extends Controller
         $valor = $request->input('valor');
         $tipo  = $request->input('tipo', 'nome_razao');
 
-        $dados = Tecnicos::with('user')
+        $dados = Tecnicos::with('usuario')
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
                 if (in_array($tipo, ['nome_razao', 'email', 'cpf_cnpj', 'telefone'])) {
-                    $query->whereHas('user', function ($q) use ($tipo, $valor) {
+                    $query->whereHas('usuario', function ($q) use ($tipo, $valor) {
                         $q->where($tipo, 'like', '%' . $valor . '%');
                     });
                 } else {
@@ -66,7 +66,7 @@ class TecnicosController extends Controller
         $this->validateForm($request);
 
         DB::transaction(function () use ($request) {
-            $user = Usuario::create([
+            $usuario = Usuario::create([
                 'nome_razao'      => $request->input('nome_razao'),
                 'email'           => $request->input('email'),
                 'cpf_cnpj'        => $request->input('cpf_cnpj'),
@@ -76,7 +76,7 @@ class TecnicosController extends Controller
             ]);
 
             Tecnicos::create([
-                'UserID'    => $user->UserID,
+                'usuarioID'    => $usuario->usuarioID,
                 'documento' => $request->input('documento'),
             ]);
         });
@@ -86,7 +86,7 @@ class TecnicosController extends Controller
 
     public function edit($id)
     {
-        $dado = Tecnicos::with('user')->findOrFail($id);
+        $dado = Tecnicos::with('usuario')->findOrFail($id);
         return view('tecnico.form', compact('dado'));
     }
 
@@ -97,7 +97,7 @@ class TecnicosController extends Controller
         $tecnico = Tecnicos::findOrFail($id);
 
         DB::transaction(function () use ($request, $tecnico) {
-            $tecnico->user->update([
+            $tecnico->usuario->update([
                 'nome_razao'      => $request->input('nome_razao'),
                 'email'           => $request->input('email'),
                 'cpf_cnpj'        => $request->input('cpf_cnpj'),
@@ -118,11 +118,11 @@ class TecnicosController extends Controller
         $tecnico = Tecnicos::findOrFail($id);
 
         DB::transaction(function () use ($tecnico) {
-            $user = $tecnico->user;
+            $usuario = $tecnico->usuario;
             
             $tecnico->delete(); 
-            if ($user) {
-                $user->delete(); 
+            if ($usuario) {
+                $usuario->delete(); 
             }
         });
 

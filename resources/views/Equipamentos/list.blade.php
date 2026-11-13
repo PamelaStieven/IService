@@ -12,7 +12,7 @@
 
         <div class="col text-end">
             <a href="{{ route('equipamentos.create') }}" class="btn btn-success">
-                Novo
+                Novo Equipamento
             </a>
         </div>
     </div>
@@ -47,26 +47,26 @@
                 @forelse($dados as $item)
 
                     <tr>
-                        <td>{{ $item->id }}</td>
-                        <td>{{ $item->usuario->nome ?? '-' }}</td>
+                        <td>{{ $item->EquipID }}</td>
+                        <td>{{ optional($item->usuario)->nome ?? optional($item->usuario)->nome_razao ?? 'Sem usuário' }}</td>
                         <td>{{ $item->nome }}</td>
                         <td>{{ $item->modelo }}</td>
                         <td>{{ $item->descricao_tecnica }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->data_compra)->format('d/m/Y H:i') }}</td>
+                        <td>{{ $item->data_compra ? \Carbon\Carbon::parse($item->data_compra)->format('d/m/Y H:i') : '-' }}</td>
                         <td>R$ {{ number_format($item->valor_aluguel, 2, ',', '.') }}</td>
                         <td>{{ $item->status }}</td>
 
                         <td class="text-center">
 
                             <a
-                                href="{{ route('equipamentos.edit', $item->id) }}"
+                                href="{{ route('equipamentos.edit', $item->EquipID) }}"
                                 class="btn btn-warning btn-sm"
                             >
                                 Editar
                             </a>
 
                             <form
-                                action="{{ route('equipamentos.destroy', $item->id) }}"
+                                action="{{ route('equipamentos.destroy', $item->EquipID) }}"
                                 method="POST"
                                 class="d-inline"
                             >
@@ -88,8 +88,8 @@
                 @empty
 
                     <tr>
-                        <td colspan="9" class="text-center">
-                            Nenhum equipamento encontrado.
+                        <td colspan="9" class="text-center py-4 text-muted">
+                            Nenhum equipamento cadastrado ainda. Clique em "Novo Equipamento" para começar.
                         </td>
                     </tr>
 

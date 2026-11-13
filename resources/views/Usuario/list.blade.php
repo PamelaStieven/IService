@@ -31,7 +31,6 @@
             <span class="font-bold text-lg text-gray-900">Service</span>
         </div>
 
-        <!-- Botões de Navegação Rápida (Serviços, Técnicos, Agendamentos, Equipamentos) -->
         <nav class="hidden md:flex items-center gap-2">
             <a href="{{ route('servicos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
                 Serviços
@@ -47,7 +46,6 @@
             </a>
         </nav>
 
-        <!-- Botão Novo Usuário -->
         <div>
             <a href="{{ route('usuario.create') }}" class="bg-cobalto hover-bg-cobalto text-white font-bold py-2.5 px-4 rounded-2xl shadow-sm hover:shadow transition-all text-sm flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
