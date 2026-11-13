@@ -44,7 +44,7 @@
                     <tr>
                         <td>{{ $item->TecnicoID }}</td>
 
-                        <td>{{ $item->user->nome_razao ?? '-' }}</td>
+                        <td>{{ $item->usuario->nome_razao ?? '-' }}</td>
 
                         <td>
                             {{ !empty($item->documento) ? 'Anexado' : 'Não anexado' }}

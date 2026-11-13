@@ -6,6 +6,7 @@ use App\Models\Usuario;
 use App\Models\Tecnicos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class TecnicosController extends Controller
 {
@@ -25,7 +26,7 @@ class TecnicosController extends Controller
                 }
             })->get();
 
-        return view('tecnico.list', [
+        return view('Tecnicos.list', [
             'dados' => $dados,
             'tipo'  => $tipo,
             'valor' => $valor
@@ -40,18 +41,26 @@ class TecnicosController extends Controller
     public function create()
     {
         $dado = new Tecnicos();
-        return view('tecnico.form', compact('dado'));
+        return view('Tecnicos.form', compact('dado'));
     }
 
-    private function validateForm(Request $request)
+    private function validateForm(Request $request, ?int $userId = null)
     {
+        $emailUnique = Rule::unique('usuario', 'email');
+        $cpfUnique = Rule::unique('usuario', 'cpf_cnpj');
+
+        if ($userId !== null) {
+            $emailUnique->ignore($userId, 'UserID');
+            $cpfUnique->ignore($userId, 'UserID');
+        }
+
         $request->validate([
             'nome_razao'      => 'required|string|max:55',
-            'email'           => 'required|email|max:55',
-            'cpf_cnpj'        => 'required|string|max:18',
-            'telefone'        => 'nullable|string|max:14',
-            'data_nascimento' => 'nullable|date',
-            'documento'       => 'nullable',
+            'email'           => ['required', 'email', 'max:55', $emailUnique],
+            'cpf_cnpj'        => ['required', 'string', 'max:18', $cpfUnique],
+            'telefone'        => 'required|string|max:14',
+            'data_nascimento' => 'required|date',
+            'documento'       => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:60',
         ], [
             'nome_razao.required' => 'O campo nome é obrigatório.',
             'email.required'      => 'O campo e-mail é obrigatório.',
@@ -76,25 +85,26 @@ class TecnicosController extends Controller
             ]);
 
             Tecnicos::create([
-                'usuarioID'    => $usuario->usuarioID,
-                'documento' => $request->input('documento'),
+                'UserID'    => $usuario->UserID,
+                'documento' => $request->hasFile('documento')
+                    ? $request->file('documento')->getContent()
+                    : null,
             ]);
         });
 
-        return redirect()->route('tecnico.index')->with('success', 'Técnico salvo com sucesso!');
+        return redirect()->route('tecnicos.index')->with('success', 'Técnico salvo com sucesso!');
     }
 
     public function edit($id)
     {
         $dado = Tecnicos::with('usuario')->findOrFail($id);
-        return view('tecnico.form', compact('dado'));
+        return view('Tecnicos.form', compact('dado'));
     }
 
     public function update(Request $request, $id)
     {
-        $this->validateForm($request);
-
-        $tecnico = Tecnicos::findOrFail($id);
+        $tecnico = Tecnicos::with('usuario')->findOrFail($id);
+        $this->validateForm($request, $tecnico->UserID);
 
         DB::transaction(function () use ($request, $tecnico) {
             $tecnico->usuario->update([
@@ -105,12 +115,14 @@ class TecnicosController extends Controller
                 'telefone'        => $request->input('telefone'),
             ]);
 
-            $tecnico->update([
-                'documento' => $request->input('documento'),
-            ]);
+            if ($request->hasFile('documento')) {
+                $tecnico->update([
+                    'documento' => $request->file('documento')->getContent(),
+                ]);
+            }
         });
 
-        return redirect()->route('tecnico.index')->with('success', 'Técnico atualizado com sucesso!');
+        return redirect()->route('tecnicos.index')->with('success', 'Técnico atualizado com sucesso!');
     }
 
     public function destroy($id)
@@ -126,6 +138,6 @@ class TecnicosController extends Controller
             }
         });
 
-        return redirect()->route('tecnico.index')->with('success', 'Técnico removido com sucesso!');
+        return redirect()->route('tecnicos.index')->with('success', 'Técnico removido com sucesso!');
     }
 }
