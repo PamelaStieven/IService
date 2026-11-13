@@ -32,8 +32,8 @@
         </div>
 
         <nav class="hidden md:flex items-center gap-2">
-            <a href="{{ route('servicos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
-                Serviços
+            <a href="{{ route('enderecos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
+               Endereços
             </a>
             <a href="{{ route('tecnicos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
                 Técnicos

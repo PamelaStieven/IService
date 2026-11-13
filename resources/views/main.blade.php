@@ -66,7 +66,10 @@
             <div class="collapse navbar-collapse justify-content-center" id="navbarContent">
                 <ul class="navbar-nav mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="{{ route('tecnicos.index') }}">Técnicos</a>
+                        <a class="nav-link nav-link-custom" href="{{ route('enderecos.index') }}">Endereços</a>
+                    </li>
+                    <li class="nav-item">
+                         <a class="nav-link nav-link-custom" href="{{ route('tecnicos.index') }}">Técnicos</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link nav-link-custom" href="{{ route('agendamentos.index') }}">Agendamentos</a>
@@ -74,8 +77,7 @@
                     <li class="nav-item">
                         <a class="nav-link nav-link-custom active" href="{{ route('equipamentos.index') }}">Equipamentos</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="{{ route('usuario.index') }}">Endereços</a>
+            
                 </ul>
             </div>
 

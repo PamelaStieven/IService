@@ -32,7 +32,9 @@ Route::get('servicos/search', [ServicoController::class, 'search'])->name('servi
 Route::resource('servicos', ServicoController::class);
 
 Route::get('agendamentos/search', [AgendamentoController::class, 'search'])->name('agendamentos.search');
-Route::resource('agendamentos', AgendamentoController::class);
+Route::resource('agendamentos', AgendamentoController::class)->parameters([
+    'agendamentos' => 'agendamento:AgendamentoID'
+]);
 
 Route::get('itens-servico/search', [ItemServicoController::class, 'search'])->name('itens-servico.search');
 Route::resource('itens-servico', ItemServicoController::class);
