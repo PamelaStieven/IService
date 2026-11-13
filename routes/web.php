@@ -48,3 +48,4 @@ Route::resource('dados-bancarios', DadosBancariosController::class);
 
 Route::get('habilidades/search', [HabilidadeController::class, 'search'])->name('habilidades.search');
 Route::resource('habilidades', HabilidadeController::class);
+

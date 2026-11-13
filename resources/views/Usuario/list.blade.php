@@ -21,21 +21,41 @@
 <body class="text-gray-800 antialiased" x-data="{ search: '', filtroTipo: '' }">
 
     <header class="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-xl bg-cobalto flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                    IS
-                </div>
-                <span class="font-bold text-xl tracking-tight text-gray-900">IService</span>
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        
+        <!-- Logo e Nome -->
+        <div class="flex items-center gap-3">
+            <div class="bg-cobalto text-white font-bold w-10 h-10 rounded-xl flex items-center justify-center shadow-sm">
+                I
             </div>
+            <span class="font-bold text-lg text-gray-900">Service</span>
+        </div>
 
-            <a href="{{ route('usuario.create') }}" 
-               class="bg-cobalto hover-bg-cobalto text-white font-semibold text-sm px-5 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center gap-2">
+        <!-- Botões de Navegação Rápida (Serviços, Técnicos, Agendamentos, Equipamentos) -->
+        <nav class="hidden md:flex items-center gap-2">
+            <a href="{{ route('servicos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
+                Serviços
+            </a>
+            <a href="{{ route('tecnicos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
+                Técnicos
+            </a>
+            <a href="{{ route('agendamentos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
+                Agendamentos
+            </a>
+            <a href="{{ route('equipamentos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
+                Equipamentos
+            </a>
+        </nav>
+
+        <!-- Botão Novo Usuário -->
+        <div>
+            <a href="{{ route('usuario.create') }}" class="bg-cobalto hover-bg-cobalto text-white font-bold py-2.5 px-4 rounded-2xl shadow-sm hover:shadow transition-all text-sm flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Novo Usuário
             </a>
         </div>
-    </header>
+    </div>
+</header>
 
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
