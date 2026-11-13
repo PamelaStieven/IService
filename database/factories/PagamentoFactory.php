@@ -14,7 +14,7 @@ class PagamentoFactory extends Factory
     public function definition(): array
     {
         return [
-            'AgendaID'         => Agendamento::factory(),
+            'AgendamentoID'         => Agendamento::factory(),
             'LocEquipID'       => LocacaoEquip::factory(),
             'metodo'           => $this->faker->randomElement(['PIX', 'Boleto']),
             'valor_total'      => $this->faker->randomFloat(2, 100, 1000),

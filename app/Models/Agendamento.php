@@ -15,7 +15,7 @@ class Agendamento extends Model
     use HasFactory;
 
     protected $table = 'Agendamento';
-    protected $primaryKey = 'AgendaID';
+    protected $primaryKey = 'AgendamentoID';
     public $timestamps = false;
 
     protected $fillable = [

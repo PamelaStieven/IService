@@ -42,7 +42,7 @@ class PagamentoController extends Controller
     private function validateForm(Request $request)
     {
         $request->validate([
-            'AgendaID'         => 'nullable|exists:Agendamento,AgendaID',
+            'AgendamentoID'         => 'nullable|exists:Agendamento,AgendamentoID',
             'LocEquipID'       => 'nullable|exists:LocacaoEquip,LocEquipID',
             'metodo'           => 'required|in:PIX,Boleto',
             'valor_total'      => 'required|numeric|min:0',
@@ -54,7 +54,7 @@ class PagamentoController extends Controller
             'valor_total.required'      => 'O valor total é obrigatório.',
             'taxa_site.required'        => 'A taxa do site é obrigatória.',
             'status_pagamento.required' => 'O status do pagamento é obrigatório.',
-            'data_pagamento.required'   => 'A data do pagamento é obrigatória.',
+            'data_pagamento.required'   => 'A :attribute do pagamento é obrigatória.',
         ]);
     }
 

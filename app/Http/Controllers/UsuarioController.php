@@ -7,25 +7,11 @@ use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $valor = $request->input('valor');
-        $tipo  = $request->input('tipo', 'nome');
-
-        $dados = Usuario::when(!empty($valor), function ($query) use ($tipo, $valor) {
-            $query->where($tipo, 'like', '%' . $valor . '%');
-        })->get();
-
-        return view('usuario.list', [
-            'dados' => $dados,
-            'tipo'  => $tipo,
-            'valor' => $valor
-        ]);
-    }
-
-    public function search(Request $request)
-    {
-        return $this->index($request);
+        $usuarios = Usuario::all();
+        
+        return view('Usuario.list', compact('usuarios'));
     }
 
     public function create()
@@ -85,5 +71,17 @@ class UsuarioController extends Controller
         Usuario::destroy($id);
 
         return redirect()->route('usuario.index')->with('success', 'Registro removido com sucesso!');
+    }
+
+    public function search(Request $request)
+    {
+        $termo = $request->input('termo');
+
+        $usuarios = Usuario::where('nome_razao', 'LIKE', "%{$termo}%")
+                           ->orWhere('email', 'LIKE', "%{$termo}%")
+                           ->orWhere('cpf_cnpj', 'LIKE', "%{$termo}%")
+                           ->get();
+
+        return view('usuarios.list', compact('usuarios', 'termo'));
     }
 }

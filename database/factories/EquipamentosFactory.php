@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Usuario;
 use App\Models\Equipamentos;
 use App\Models\Tecnicos;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -13,7 +14,7 @@ class EquipamentosFactory extends Factory
     public function definition(): array
     {
         return [
-            'usuario_id' => App\Models\Usuario::factory(),
+            'UserID' => Usuario::factory(),
             'nome' => $this->faker->randomElement([
                 'Furadeira',
                 'Parafusadeira',
@@ -30,7 +31,6 @@ class EquipamentosFactory extends Factory
             ),
             'valor_aluguel' => $this->faker->randomFloat(2, 50, 1500),
             'status' => $this->faker->randomElement(['Disponível', 'Alugado', 'Em manutenção']),
-        'status',
         ];
     }
 }

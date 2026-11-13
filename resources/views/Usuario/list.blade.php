@@ -1,96 +1,146 @@
-@extends('main')
-@section('titulo', 'Listagem de Usuários')
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IService - Usuários</title>
 
-@section('conteudo')
-<div class="container my-4">
-    <div class="row mb-3">
-        <h3>Listagem de Usuários</h3>
-        <form action="{{ route('usuario.search') }}" method="POST">
-            @csrf
-            <div class="row align-items-end g-2">
-                <div class="col-md-3">
-                    <label for="tipo" class="form-label">Filtrar por Campo</label>
-                    <select name="tipo" id="tipo" class="form-select">
-                        <option value="nome_razao" {{ request('tipo') == 'nome_razao' ? 'selected' : '' }}>Nome / Razão</option>
-                        <option value="email" {{ request('tipo') == 'email' ? 'selected' : '' }}>Email</option>
-                        <option value="cpf_cnpj" {{ request('tipo') == 'cpf_cnpj' ? 'selected' : '' }}>CPF/CNPJ</option>
-                        <option value="telefone" {{ request('tipo') == 'telefone' ? 'selected' : '' }}>Telefone</option>
-                        <option value="tipo" {{ request('tipo') == 'tipo' ? 'selected' : '' }}>Tipo de Usuário</option>
-                    </select>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F7F8FA; }
+        .bg-cobalto { background-color: #0047AB; }
+        .hover-bg-cobalto:hover { background-color: #003580; }
+        .text-cobalto { color: #0047AB; }
+        .bg-diamante-suave { background-color: #E6F7FF; }
+        .text-diamante { color: #0095D9; }
+        .border-diamante { border-color: #B3E5FC; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased" x-data="{ search: '', filtroTipo: '' }">
+
+    <header class="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-cobalto flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                    IS
                 </div>
-                <div class="col-md-4">
-                    <label for="valor" class="form-label">Valor</label>
-                    <input type="text" name="valor" id="valor" class="form-control" placeholder="Digite para pesquisar..." value="{{ request('valor') }}">
-                </div>
-                <div class="col-md-5 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Buscar</button>
-                    <a href="{{ route('usuario.index') }}" class="btn btn-secondary">Limpar</a>
-                    <a href="{{ route('usuario.create') }}" class="btn btn-success ms-auto">Novo</a>
-                </div>
+                <span class="font-bold text-xl tracking-tight text-gray-900">IService</span>
             </div>
-        </form>
-    </div>
-    
-    <div class="row mt-4">
-        <table class="table table-striped table-hover shadow-sm">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Nome / Razão</th>
-                    <th>Email</th>
-                    <th>CPF/CNPJ</th>
-                    <th>Data de Nascimento</th>
-                    <th>Telefone</th>
-                    <th>Tipo</th>
-                    <th class="text-center" >Ações</th>
-                    <th class="text-center" >Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($dados as $item)
-                    <tr>
-                        <td>{{ $item->UserID }}</td>
-                        <td>{{ $item->nome_razao }}</td>
-                        <td>{{ $item->email }}</td>
-                        <td>{{ $item->cpf_cnpj }}</td>
-                        <td>{{ $item->data_nascimento ? \Illuminate\Support\Carbon::parse($item->data_nascimento)->format('d/m/Y') : '-' }}</td>
-                        <td>{{ $item->telefone ?? '-' }}</td>
-                        <td>
+
+            <a href="{{ route('usuarios.create') }}" 
+               class="bg-cobalto hover-bg-cobalto text-white font-semibold text-sm px-5 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Novo Usuário
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        @if(session('success'))
+            <div x-data="{ show: true }" x-show="show" x-transition
+                 class="mb-6 bg-diamante-suave border border-diamante text-cobalto px-5 py-4 rounded-2xl flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cobalto"></span>
+                    <span class="font-medium text-sm">{{ session('success') }}</span>
+                </div>
+                <button @click="show = false" class="text-cobalto hover:opacity-75 font-bold">&times;</button>
+            </div>
+        @endif
+
+        <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Usuários Cadastrados</h1>
+                <p class="text-sm text-gray-500 mt-0.5">Gerencie técnicos, administradores e clientes da plataforma.</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="relative">
+                    <input type="text" x-model="search" placeholder="Buscar por nome ou CPF..."
+                           class="w-full sm:w-64 pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/10 transition">
+                    <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+
+                <select x-model="filtroTipo" class="px-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm text-gray-700 focus:outline-none focus:border-[#0047AB] transition">
+                    <option value="">Todos os Perfis</option>
+                    <option value="Técnico">Técnico</option>
+                    <option value="Administrador">Administrador</option>
+                    <option value="Usuário">Usuário</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            @forelse($usuarios as $usuario)
+                <div x-show="(search === '' || '{{ strtolower($usuario->nome_razao) }}'.includes(search.toLowerCase()) || '{{ $usuario->cpf_cnpj }}'.includes(search)) && (filtroTipo === '' || '{{ $usuario->tipo }}' === filtroTipo)"
+                     x-transition
+                     class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+                    
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-2xl bg-diamante-suave text-cobalto font-bold flex items-center justify-center text-base shrink-0">
+                                    {{ strtoupper(substr($usuario->nome_razao, 0, 2)) }}
+                                </div>
+                                <div>
+                                    <h2 class="font-bold text-gray-900 text-base leading-snug line-clamp-1">{{ $usuario->nome_razao }}</h2>
+                                    <span class="text-xs text-gray-400">ID #{{ $usuario->UserID }}</span>
+                                </div>
+                            </div>
+
                             @php
-                                $badgeClass = match($item->tipo) {
-                                    'Administrador' => 'bg-danger',
-                                    'Técnico' => 'bg-warning text-dark',
-                                    default => 'bg-primary',
+                                $badgeClass = match($usuario->tipo) {
+                                    'Administrador' => 'bg-cobalto text-white',
+                                    'Técnico'       => 'bg-diamante-suave text-cobalto border border-diamante',
+                                    default         => 'bg-gray-100 text-gray-600'
                                 };
                             @endphp
-                            <span class="badge {{ $badgeClass }}">
-                                {{ $item->tipo ?? 'Usuário' }}
+                            <span class="text-xs font-semibold px-3 py-1 rounded-full {{ $badgeClass }}">
+                                {{ $usuario->tipo }}
                             </span>
-                        </td>
-                        <td class="text-center" style="width: 80px;">
-                            <a href="{{ route('usuario.edit', $item->UserID) }}" class="btn btn-warning btn-sm" title="Editar">Editar</a>
-                        </td>
-                        <td class="text-center" style="width: 80px;">
-                            <form action="{{ route('usuario.destroy', $item->UserID) }}" method="post">
-                                @csrf
-                                @method('DELETE')
-                                <button
-                                    type="submit"
-                                    class="btn btn-danger btn-sm"
-                                    title="Excluir"
-                                    onclick="return confirm('Deseja realmente excluir este usuário?')">
-                                    Deletar
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="8" class="text-center">Nenhum usuário encontrado.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
-@endsection
+                        </div>
+
+                        <div class="space-y-1.5 text-sm text-gray-600 mt-4 pt-3 border-t border-gray-50">
+                            <p class="flex items-center gap-2 truncate">
+                                <span class="text-gray-400"></span> {{ $usuario->email }}
+                            </p>
+                            <p class="flex items-center gap-2">
+                                <span class="text-gray-400"></span> {{ $usuario->cpf_cnpj }}
+                            </p>
+                            <p class="flex items-center gap-2">
+                                <span class="text-gray-400"></span> {{ $usuario->telefone }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 pt-3 border-t border-gray-100 flex items-center justify-end gap-2">
+                        <a href="{{ route('usuarios.edit', $usuario->UserID) }}" 
+                           class="px-4 py-1.5 rounded-full text-xs font-semibold text-cobalto bg-diamante-suave hover:bg-[#cceeff] transition">
+                            Editar
+                        </a>
+
+                        <form action="{{ route('usuarios.destroy', $usuario->UserID) }}" method="POST" 
+                              onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" 
+                                    class="px-4 py-1.5 rounded-full text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 transition">
+                                Excluir
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full bg-white rounded-2xl p-12 text-center border border-gray-100">
+                    <p class="text-gray-500 font-medium">Nenhum usuário cadastrado até o momento.</p>
+                    <a href="{{ route('usuarios.create') }}" class="inline-block mt-3 text-sm font-semibold text-cobalto hover:underline">
+                        + Cadastrar o primeiro usuário
+                    </a>
+                </div>
+            @endforelse
+        </div>
+    </main>
+</body>
+</html>

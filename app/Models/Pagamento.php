@@ -16,7 +16,7 @@ class Pagamento extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'AgendaID',
+        'AgendamentoID',
         'LocEquipID',
         'metodo',
         'valor_total',
@@ -33,7 +33,7 @@ class Pagamento extends Model
 
     public function agendamento()
     {
-        return $this->belongsTo(Agendamento::class, 'AgendaID', 'AgendaID');
+        return $this->belongsTo(Agendamento::class, 'AgendamentoID', 'AgendamentoID');
     }
 
     public function locacaoEquip()
