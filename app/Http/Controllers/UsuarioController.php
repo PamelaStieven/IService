@@ -9,9 +9,9 @@ class UsuarioController extends Controller
 {
     public function index()
     {
-        $usuarios = Usuario::all();
+        $usuario = Usuario::all();
         
-        return view('Usuario.list', compact('usuarios'));
+        return view('usuario.list', compact('usuario'));
     }
 
     public function create()
@@ -77,11 +77,11 @@ class UsuarioController extends Controller
     {
         $termo = $request->input('termo');
 
-        $usuarios = Usuario::where('nome_razao', 'LIKE', "%{$termo}%")
+        $usuario = Usuario::where('nome_razao', 'LIKE', "%{$termo}%")
                            ->orWhere('email', 'LIKE', "%{$termo}%")
                            ->orWhere('cpf_cnpj', 'LIKE', "%{$termo}%")
                            ->get();
 
-        return view('usuarios.list', compact('usuarios', 'termo'));
+        return view('usuario.list', compact('usuario', 'termo'));
     }
 }

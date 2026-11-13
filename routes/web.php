@@ -16,8 +16,8 @@ use App\Http\Controllers\HabilidadeController;
 
 Route::get('/', [App\Http\Controllers\UsuarioController::class, 'index']);
 
-Route::get('usuarios/search', [UsuarioController::class, 'search'])->name('usuarios.search');
-Route::resource('usuarios', UsuarioController::class);
+Route::get('usuario/search', [UsuarioController::class, 'search'])->name('usuario.search');
+Route::resource('usuario', UsuarioController::class);
 
 Route::get('equipamentos/search', [EquipamentoController::class, 'search'])->name('equipamentos.search');
 Route::resource('equipamentos', EquipamentoController::class);
