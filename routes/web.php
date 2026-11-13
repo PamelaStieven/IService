@@ -14,7 +14,7 @@ use App\Http\Controllers\LocacaoEquipController;
 use App\Http\Controllers\DadosBancariosController;
 use App\Http\Controllers\HabilidadeController;
 
-Route::get('/', function () {return view('welcome');});
+Route::get('/', [App\Http\Controllers\UsuarioController::class, 'index']);
 
 Route::get('usuarios/search', [UsuarioController::class, 'search'])->name('usuarios.search');
 Route::resource('usuarios', UsuarioController::class);
