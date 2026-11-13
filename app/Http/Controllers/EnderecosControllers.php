@@ -75,7 +75,7 @@ class EnderecosController extends Controller
 
     public function destroy($id)
     {
-        Endereco::destroy($id);
+        Enderecos::destroy($id);
 
         return redirect()->route('enderecos.index')
             ->with('success', 'Registro removido com sucesso!');
