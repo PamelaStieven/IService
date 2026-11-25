@@ -14,10 +14,10 @@ class TecnicosController extends Controller
         $valor = $request->input('valor');
         $tipo  = $request->input('tipo', 'nome_razao');
 
-        $dados = Tecnicos::with('user')
+        $dados = Tecnicos::with('usuario')
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
                 if (in_array($tipo, ['nome_razao', 'email', 'cpf_cnpj', 'telefone'])) {
-                    $query->whereHas('user', function ($q) use ($tipo, $valor) {
+                    $query->whereHas('usuario', function ($q) use ($tipo, $valor) {
                         $q->where($tipo, 'like', '%' . $valor . '%');
                     });
                 } else {
@@ -25,7 +25,7 @@ class TecnicosController extends Controller
                 }
             })->get();
 
-        return view('tecnico.list', [
+        return view('Tecnicos.list', [
             'dados' => $dados,
             'tipo'  => $tipo,
             'valor' => $valor
@@ -40,7 +40,7 @@ class TecnicosController extends Controller
     public function create()
     {
         $dado = new Tecnicos();
-        return view('tecnico.form', compact('dado'));
+        return view('Tecnicos.form', compact('dado'));
     }
 
     private function validateForm(Request $request)
@@ -81,13 +81,13 @@ class TecnicosController extends Controller
             ]);
         });
 
-        return redirect()->route('tecnico.index')->with('success', 'Técnico salvo com sucesso!');
+        return redirect()->route('tecnicos.index')->with('success', 'Técnico salvo com sucesso!');
     }
 
     public function edit($id)
     {
-        $dado = Tecnicos::with('user')->findOrFail($id);
-        return view('tecnico.form', compact('dado'));
+        $dado = Tecnicos::with('usuario')->findOrFail($id);
+        return view('Tecnicos.form', compact('dado'));
     }
 
     public function update(Request $request, $id)
@@ -97,7 +97,7 @@ class TecnicosController extends Controller
         $tecnico = Tecnicos::findOrFail($id);
 
         DB::transaction(function () use ($request, $tecnico) {
-            $tecnico->user->update([
+            $tecnico->usuario->update([
                 'nome_razao'      => $request->input('nome_razao'),
                 'email'           => $request->input('email'),
                 'cpf_cnpj'        => $request->input('cpf_cnpj'),
@@ -110,7 +110,7 @@ class TecnicosController extends Controller
             ]);
         });
 
-        return redirect()->route('tecnico.index')->with('success', 'Técnico atualizado com sucesso!');
+        return redirect()->route('tecnicos.index')->with('success', 'Técnico atualizado com sucesso!');
     }
 
     public function destroy($id)
@@ -118,7 +118,7 @@ class TecnicosController extends Controller
         $tecnico = Tecnicos::findOrFail($id);
 
         DB::transaction(function () use ($tecnico) {
-            $user = $tecnico->user;
+            $user = $tecnico->usuario;
             
             $tecnico->delete(); 
             if ($user) {
@@ -126,6 +126,6 @@ class TecnicosController extends Controller
             }
         });
 
-        return redirect()->route('tecnico.index')->with('success', 'Técnico removido com sucesso!');
+        return redirect()->route('tecnicos.index')->with('success', 'Técnico removido com sucesso!');
     }
 }
