@@ -1,64 +1,107 @@
-
 @extends('main')
 
-@section('titulo', isset($data) ? 'Editar Locação' : 'Cadastrar Locação')
+@php
+    $isEdit = isset($dado) && !empty($dado->LocEquipID);
+
+    $formatDateTimeLocal = function ($value) {
+        if (empty($value)) {
+            return '';
+        }
+        try {
+            return \Carbon\Carbon::parse($value)->format('Y-m-d\TH:i');
+        } catch (\Throwable $e) {
+            return '';
+        }
+    };
+
+    $valorUserId = old('UserID', $dado->UserID ?? '');
+    $valorEquipId = old('EquipID', $dado->EquipID ?? '');
+    $valorRetirada = old('data_retirada', $formatDateTimeLocal($dado->data_retirada ?? null));
+    $valorDevolucao = old('data_devolucao', $formatDateTimeLocal($dado->data_devolucao ?? null));
+@endphp
+
+@section('titulo', $isEdit ? 'Editar Locação de Equipamento' : 'Cadastrar Locação de Equipamento')
 
 @section('conteudo')
 
 <div class="container">
-    <h2>{{ isset($data) ? 'Editar Locação' : 'Cadastrar Locação' }}</h2>
+    <h2>{{ $isEdit ? 'Editar Locação de Equipamento' : 'Cadastrar Locação de Equipamento' }}</h2>
 
-    <form action="{{ isset($data) ? route('locacaoequip.update', $data->LocEquipID) : route('locacaoequip.store') }}"
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $erro)
+                    <li>{{ $erro }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form action="{{ $isEdit ? route('locacoes-equipamentos.update', $dado->LocEquipID) : route('locacoes-equipamentos.store') }}"
           method="POST">
-
         @csrf
 
-        @if(isset($data))
+        @if($isEdit)
             @method('PUT')
         @endif
 
         <div class="mb-3">
             <label for="UserID" class="form-label">Usuário</label>
-
             <select name="UserID" id="UserID" class="form-control" required>
                 <option value="">Selecione um usuário</option>
-
                 @foreach($usuarios as $usuario)
-                    <option value="{{ $usuario->UserID }}"
-                        {{ old('UserID', $data->UserID ?? '') == $usuario->UserID ? 'selected' : '' }}>
-                        {{ $usuario->nome_razao }}
+                    @php
+                        $uid = $usuario->UserID ?? $usuario->id;
+                        $unome = $usuario->nome_razao ?? $usuario->nome ?? $usuario->name ?? ('Usuário #' . $uid);
+                    @endphp
+                    <option value="{{ $uid }}" {{ (string) $valorUserId === (string) $uid ? 'selected' : '' }}>
+                        {{ $unome }}
                     </option>
                 @endforeach
             </select>
         </div>
 
         <div class="mb-3">
-            <label for="data_retirada" class="form-label">Data e hora da retirada</label>
+            <label for="EquipID" class="form-label">Equipamento</label>
+            <select name="EquipID" id="EquipID" class="form-control" required>
+                <option value="">Selecione um equipamento</option>
+                @foreach($equipamentos as $equipamento)
+                    @php
+                        $eid = $equipamento->EquipID ?? $equipamento->id;
+                        $enome = $equipamento->nome ?? $equipamento->descricao ?? $equipamento->modelo ?? ('Equipamento #' . $eid);
+                    @endphp
+                    <option value="{{ $eid }}" {{ (string) $valorEquipId === (string) $eid ? 'selected' : '' }}>
+                        {{ $enome }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
+        <div class="mb-3">
+            <label for="data_retirada" class="form-label">Data da Retirada</label>
             <input type="datetime-local"
                    name="data_retirada"
                    id="data_retirada"
                    class="form-control"
-                   value="{{ old('data_retirada', isset($data) ? date('Y-m-d\TH:i', strtotime($data->data_retirada)) : '') }}"
+                   value="{{ $valorRetirada }}"
                    required>
         </div>
 
         <div class="mb-3">
-            <label for="data_devolucao" class="form-label">Data e hora da devolução</label>
-
+            <label for="data_devolucao" class="form-label">Data da Devolução</label>
             <input type="datetime-local"
                    name="data_devolucao"
                    id="data_devolucao"
                    class="form-control"
-                   value="{{ old('data_devolucao', isset($data) ? date('Y-m-d\TH:i', strtotime($data->data_devolucao)) : '') }}"
+                   value="{{ $valorDevolucao }}"
                    required>
         </div>
 
         <button type="submit" class="btn btn-success">
-            Salvar
+            {{ $isEdit ? 'Atualizar' : 'Salvar' }}
         </button>
 
-        <a href="{{ route('locacaoequip.index') }}" class="btn btn-secondary">
+        <a href="{{ route('locacoes-equipamentos.index') }}" class="btn btn-secondary">
             Voltar
         </a>
     </form>

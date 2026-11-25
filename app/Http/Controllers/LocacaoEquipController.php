@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LocacaoEquip;
 use App\Models\Usuario;
+use App\Models\Equipamentos;
 use Illuminate\Http\Request;
 
 class LocacaoEquipController extends Controller
@@ -13,22 +14,14 @@ class LocacaoEquipController extends Controller
         $valor = $request->input('valor');
         $tipo  = $request->input('tipo', 'UserID');
 
-        $dados = LocacaoEquip::with('user')
+        $dados = LocacaoEquip::with(['usuario', 'pagamento'])
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
-                if ($tipo === 'usuario') {
-                    $query->whereHas('user', function ($q) use ($valor) {
-                        $q->where('nome_razao', 'like', '%' . $valor . '%');
-                    });
-                } else {
-                    $query->where($tipo, 'like', '%' . $valor . '%');
-                }
-            })->get();
+                $query->where($tipo, 'like', '%' . $valor . '%');
+            })
+            ->orderByDesc('LocEquipID')
+            ->get();
 
-        return view('locacao_equip.list', [
-            'dados' => $dados,
-            'tipo'  => $tipo,
-            'valor' => $valor
-        ]);
+        return view('LocacaoEquip.list', compact('dados', 'tipo', 'valor'));
     }
 
     public function search(Request $request)
@@ -40,53 +33,66 @@ class LocacaoEquipController extends Controller
     {
         $dado = new LocacaoEquip();
         $usuarios = Usuario::all();
-        return view('locacao_equip.form', compact('dado', 'usuarios'));
+        $equipamentos = Equipamentos::all();
+
+        return view('LocacaoEquip.form', compact('dado', 'usuarios', 'equipamentos'));
     }
 
     private function validateForm(Request $request)
     {
-        $request->validate([
-            'UserID'         => 'required|exists:Usuario,UserID',
+        return $request->validate([
+            'UserID'         => 'required|exists:usuario,UserID',
             'data_retirada'  => 'required|date',
-            'data_devolucao' => 'required|date|after_or_equal:data_retirada',
+            'data_devolucao' => 'nullable|date|after_or_equal:data_retirada',
         ], [
-            'UserID.required'         => 'Selecione um usuário.',
-            'data_retirada.required'  => 'A data de retirada é obrigatória.',
-            'data_devolucao.required' => 'A data de devolução é obrigatória.',
-            'data_devolucao.after_or_equal' => 'A devolução deve ser igual ou após a retirada.',
+            'UserID.required'                  => 'Selecione o usuário.',
+            'UserID.exists'                    => 'O usuário selecionado é inválido.',
+            'data_retirada.required'           => 'A data da retirada é obrigatória.',
+            'data_retirada.date'               => 'Informe uma data de retirada válida.',
+            'data_devolucao.date'              => 'Informe uma data de devolução válida.',
+            'data_devolucao.after_or_equal'    => 'A data da devolução deve ser igual ou posterior à data da retirada.',
         ]);
     }
 
     public function store(Request $request)
     {
-        $this->validateForm($request);
+        $dadosValidados = $this->validateForm($request);
 
-        LocacaoEquip::create($request->all());
+        LocacaoEquip::create($dadosValidados);
 
-        return redirect()->route('locacao_equip.index')->with('success', 'Locação criada com sucesso!');
+        return redirect()
+            ->route('locacoes-equipamentos.index')
+            ->with('success', 'Locação cadastrada com sucesso!');
     }
 
     public function edit($id)
     {
         $dado = LocacaoEquip::findOrFail($id);
         $usuarios = Usuario::all();
-        return view('locacao_equip.form', compact('dado', 'usuarios'));
+        $equipamentos = Equipamentos::all();
+
+        return view('LocacaoEquip.form', compact('dado', 'usuarios', 'equipamentos'));
     }
 
     public function update(Request $request, $id)
     {
-        $this->validateForm($request);
+        $dadosValidados = $this->validateForm($request);
 
         $locacao = LocacaoEquip::findOrFail($id);
-        $locacao->update($request->all());
+        $locacao->update($dadosValidados);
 
-        return redirect()->route('locacao_equip.index')->with('success', 'Locação atualizada com sucesso!');
+        return redirect()
+            ->route('locacoes-equipamentos.index')
+            ->with('success', 'Locação atualizada com sucesso!');
     }
 
     public function destroy($id)
     {
-        LocacaoEquip::destroy($id);
+        $locacao = LocacaoEquip::findOrFail($id);
+        $locacao->delete();
 
-        return redirect()->route('locacao_equip.index')->with('success', 'Locação removida com sucesso!');
+        return redirect()
+            ->route('locacoes-equipamentos.index')
+            ->with('success', 'Locação removida com sucesso!');
     }
 }

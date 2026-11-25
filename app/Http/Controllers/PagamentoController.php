@@ -64,7 +64,7 @@ class PagamentoController extends Controller
 
         Pagamento::create($request->all());
 
-        return redirect()->route('pagamento.index')->with('success', 'Pagamento registrado com sucesso!');
+        return redirect()->route('pagamentos.index')->with('success', 'Pagamento registrado com sucesso!');
     }
 
     public function edit($id)
@@ -72,7 +72,7 @@ class PagamentoController extends Controller
         $dado = Pagamento::findOrFail($id);
         $agendamentos = Agendamento::all();
         $locacoes = LocacaoEquip::all();
-        return view('pagamento.form', compact('dado', 'agendamentos', 'locacoes'));
+        return view('pagamentos.form', compact('dado', 'agendamentos', 'locacoes'));
     }
 
     public function update(Request $request, $id)
@@ -82,13 +82,13 @@ class PagamentoController extends Controller
         $pagamento = Pagamento::findOrFail($id);
         $pagamento->update($request->all());
 
-        return redirect()->route('pagamento.index')->with('success', 'Pagamento atualizado com sucesso!');
-    }
+        return redirect()->route('pagamentos.index')->with('success', 'Pagamento atualizado com sucesso!');
+    }   
 
     public function destroy($id)
     {
         Pagamento::destroy($id);
 
-        return redirect()->route('pagamento.index')->with('success', 'Pagamento removido com sucesso!');
+        return redirect()->route('pagamentos.index')->with('success', 'Pagamento removido com sucesso!');
     }
 }

@@ -248,11 +248,11 @@
                 <div class="iservice-dropdown-menu" id="iserviceDropdownMenu">
                     <a href="{{ route('dashboard.graficos') }}" 
                        class="iservice-dropdown-item {{ request()->is('dashboard/graficos*') ? 'active' : '' }}">
-                        📊 Gráficos & Métricas
+                        Gráficos & Métricas
                     </a>
                     <a href="{{ route('relatorios.index') }}" 
                        class="iservice-dropdown-item {{ request()->is('relatorios*') ? 'active' : '' }}">
-                        📑 Relatório Financeiro
+                        Relatório Financeiro
                     </a>
                     <div style="border-top: 1px solid #f1f5f9; margin: 0.35rem 0;"></div>
                     <a href="{{ route('pagamentos.index') }}" 
