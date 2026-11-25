@@ -228,7 +228,9 @@
 
             <!-- Dropdown Mais -->
             @php
-                $isMaisActive = request()->is('itens-servico*') || 
+                $isMaisActive = request()->is('dashboard/graficos*') ||
+                                request()->is('relatorios*') ||
+                                request()->is('itens-servico*') || 
                                 request()->is('pagamento*') || 
                                 request()->is('dados-bancario*') || 
                                 request()->is('dadosbancarios*') || 
@@ -244,13 +246,22 @@
                     </svg>
                 </button>
                 <div class="iservice-dropdown-menu" id="iserviceDropdownMenu">
-                    <a href="{{ route('itens-servico.index') }}" 
-                       class="iservice-dropdown-item {{ request()->is('itens-servico*') ? 'active' : '' }}">
-                        Itens de Serviço
+                    <a href="{{ route('dashboard.graficos') }}" 
+                       class="iservice-dropdown-item {{ request()->is('dashboard/graficos*') ? 'active' : '' }}">
+                        📊 Gráficos & Métricas
                     </a>
+                    <a href="{{ route('relatorios.index') }}" 
+                       class="iservice-dropdown-item {{ request()->is('relatorios*') ? 'active' : '' }}">
+                        📑 Relatório Financeiro
+                    </a>
+                    <div style="border-top: 1px solid #f1f5f9; margin: 0.35rem 0;"></div>
                     <a href="{{ route('pagamentos.index') }}" 
                        class="iservice-dropdown-item {{ request()->is('pagamento*') ? 'active' : '' }}">
                         Pagamentos
+                    </a>
+                    <a href="{{ route('itens-servico.index') }}" 
+                       class="iservice-dropdown-item {{ request()->is('itens-servico*') ? 'active' : '' }}">
+                        Itens de Serviço
                     </a>
                     <a href="{{ route('dados-bancarios.index') }}" 
                        class="iservice-dropdown-item {{ request()->is('dados-bancario*') || request()->is('dadosbancarios*') ? 'active' : '' }}">
@@ -264,12 +275,52 @@
             </li>
         </ul>
 
-        <!-- Botão Ação Topo Opcional ou Hamburger Mobile -->
+        <!-- Botão Ação Topo Opcional, Usuário Logado e Toggle Mobile -->
         <div style="display: flex; align-items: center; gap: 0.75rem;">
             @hasSection('botao_topo')
                 <div class="d-none d-lg-block">
                     @yield('botao_topo')
                 </div>
+            @endif
+
+            @if(Auth::check())
+                @php
+                    $painelRoute = match(Auth::user()->tipo) {
+                        'Técnico'       => route('tecnico.dashboard'),
+                        'Administrador' => route('dashboard.graficos'),
+                        default         => route('cliente.dashboard')
+                    };
+                @endphp
+                <div class="d-none d-md-flex align-items-center" style="gap: 0.6rem; border-left: 1px solid #e2e8f0; padding-left: 0.85rem;">
+                    <a href="{{ $painelRoute }}" 
+                       style="background: #E6F7FF; color: #0047AB; border-radius: 9999px; padding: 0.35rem 0.85rem; font-size: 0.8rem; font-weight: 700; text-decoration: none;"
+                       title="Acessar meu painel">
+                        Meu Painel
+                    </a>
+                    <div style="text-align: right; line-height: 1.2;">
+                        <span style="font-size: 0.85rem; font-weight: 700; color: #1e293b; display: block;">
+                            {{ Auth::user()->nome_razao }}
+                        </span>
+                        <span style="font-size: 0.7rem; font-weight: 600; color: #0047AB; text-transform: uppercase;">
+                            {{ Auth::user()->tipo }}
+                        </span>
+                    </div>
+
+                    <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" 
+                                style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 9999px; padding: 0.35rem 0.85rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;"
+                                title="Sair da Conta">
+                            <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                            <span>Sair</span>
+                        </button>
+                    </form>
+                </div>
+            @else
+                <a href="{{ route('login') }}" 
+                   style="background: #0047AB; color: #ffffff; border-radius: 9999px; padding: 0.45rem 1.15rem; font-size: 0.85rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem;">
+                    Entrar
+                </a>
             @endif
 
             <button type="button" class="iservice-nav-toggle" onclick="toggleIserviceMobileMenu()" aria-label="Abrir Menu">
@@ -290,12 +341,40 @@
         <a href="{{ route('locacoes-equipamentos.index') }}" class="iservice-mobile-link {{ request()->is('locac*') ? 'active' : '' }}">Locações</a>
         <a href="{{ route('enderecos.index') }}" class="iservice-mobile-link {{ request()->is('endereco*') ? 'active' : '' }}">Endereços</a>
         <div style="border-top: 1px solid #f1f5f9; margin: 0.5rem 0; padding-top: 0.5rem;">
-            <span style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 700; padding: 0 0.75rem;">Mais Módulos</span>
+            <span style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 700; padding: 0 0.75rem;">Análises & Gestão</span>
+            <a href="{{ route('dashboard.graficos') }}" class="iservice-mobile-link {{ request()->is('dashboard/graficos*') ? 'active' : '' }}">📊 Gráficos & Métricas</a>
+            <a href="{{ route('relatorios.index') }}" class="iservice-mobile-link {{ request()->is('relatorios*') ? 'active' : '' }}">📑 Relatório Financeiro</a>
+            <span style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 700; padding: 0 0.75rem; display: block; margin-top: 0.5rem;">Outros Módulos</span>
             <a href="{{ route('itens-servico.index') }}" class="iservice-mobile-link {{ request()->is('itens-servico*') ? 'active' : '' }}">Itens de Serviço</a>
             <a href="{{ route('pagamentos.index') }}" class="iservice-mobile-link {{ request()->is('pagamento*') ? 'active' : '' }}">Pagamentos</a>
             <a href="{{ route('dados-bancarios.index') }}" class="iservice-mobile-link {{ request()->is('dados-bancario*') || request()->is('dadosbancarios*') ? 'active' : '' }}">Dados Bancários</a>
             <a href="{{ route('habilidades.index') }}" class="iservice-mobile-link {{ request()->is('habilidade*') ? 'active' : '' }}">Habilidades</a>
         </div>
+
+        @if(Auth::check())
+            <div style="border-top: 1px solid #f1f5f9; margin-top: 0.75rem; padding-top: 0.75rem;">
+                <div style="padding: 0 0.75rem 0.5rem;">
+                    <span style="font-size: 0.85rem; font-weight: 700; color: #1e293b; display: block;">
+                        {{ Auth::user()->nome_razao }}
+                    </span>
+                    <span style="font-size: 0.75rem; color: #0047AB; font-weight: 600;">
+                        Perfil: {{ Auth::user()->tipo }}
+                    </span>
+                </div>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="iservice-mobile-link" style="width: 100%; text-align: left; background: none; border: none; color: #dc2626 !important; font-weight: 600;">
+                        Sair da Conta
+                    </button>
+                </form>
+            </div>
+        @else
+            <div style="border-top: 1px solid #f1f5f9; margin-top: 0.75rem; padding-top: 0.75rem;">
+                <a href="{{ route('login') }}" class="iservice-mobile-link" style="color: #0047AB !important; font-weight: 700;">
+                    Fazer Login
+                </a>
+            </div>
+        @endif
     </div>
 </nav>
 

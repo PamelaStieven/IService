@@ -11,7 +11,7 @@ class LocacaoEquip extends Model
 {
     use HasFactory;
 
-    protected $table = 'LocacaoEquip';
+    protected $table = 'locacao_equips';
     protected $primaryKey = 'LocEquipID';
     public $timestamps = false;
 

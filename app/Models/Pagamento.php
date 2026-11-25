@@ -11,7 +11,7 @@ class Pagamento extends Model
 {
     use HasFactory;
 
-    protected $table = 'Pagamento';
+    protected $table = 'pagamentos';
     protected $primaryKey = 'PagamentoID';
     public $timestamps = false;
 

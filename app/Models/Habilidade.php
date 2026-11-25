@@ -10,7 +10,7 @@ class Habilidade extends Model
 {
     use HasFactory;
 
-    protected $table = 'Habilidade';
+    protected $table = 'habilidade';
     protected $primaryKey = 'HabilidadeID';
     public $timestamps = false;
 

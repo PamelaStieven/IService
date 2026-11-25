@@ -10,7 +10,7 @@ class Enderecos extends Model
 {
     use HasFactory;
 
-    protected $table = 'Enderecos';
+    protected $table = 'enderecos';
     protected $primaryKey = 'EnderecosID';
     public $timestamps = false;
 

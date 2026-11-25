@@ -24,7 +24,7 @@ class DadosBancariosController extends Controller
                 }
             })->get();
 
-        return view('dados_bancarios.list', [
+        return view('dadosBancarios\list', [
             'dados' => $dados,
             'tipo'  => $tipo,
             'valor' => $valor

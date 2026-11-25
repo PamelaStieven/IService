@@ -10,7 +10,7 @@ class DadosBancarios extends Model
 {
     use HasFactory;
 
-    protected $table = 'Dados_bancarios';
+    protected $table = 'dados_bancarios';
     protected $primaryKey = 'ContaID';
     public $timestamps = false;
 

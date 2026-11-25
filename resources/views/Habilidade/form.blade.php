@@ -1,62 +1,82 @@
-
 @extends('main')
 
-@section('titulo', isset($data) ? 'Editar Habilidade' : 'Cadastrar Habilidade')
+@php
+    $item = $dado ?? $data ?? null;
+    $isEdit = isset($item) && $item->exists;
+@endphp
+
+@section('titulo', $isEdit ? 'Editar Habilidade' : 'Cadastrar Habilidade')
 
 @section('conteudo')
 
-<div class="container">
-    <h2>{{ isset($data) ? 'Editar Habilidade' : 'Cadastrar Habilidade' }}</h2>
+<div class="container my-4">
+    <div class="card border-0 shadow-sm rounded-4 p-4 max-w-2xl mx-auto bg-white" style="max-width: 700px;">
+        <div class="mb-4">
+            <h3 class="fw-bold text-dark mb-1">{{ $isEdit ? 'Editar Habilidade' : 'Cadastrar Nova Habilidade' }}</h3>
+            <p class="text-muted small mb-0">Vincule competências, cursos e especialidades aos técnicos cadastrados.</p>
+        </div>
 
-    <form action="{{ isset($data) ? route('habilidades.update', $data->HabilidadeID) : route('habilidades.store') }}"
-          method="POST"
-          enctype="multipart/form-data">
-
-        @csrf
-
-        @if(isset($data))
-            @method('PUT')
+        @if ($errors->any())
+            <div class="alert alert-danger rounded-3 text-sm mb-4">
+                <ul class="mb-0 ps-3">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
         @endif
 
-        <div class="mb-3">
-            <label for="TecnicoID" class="form-label">Técnico</label>
+        <form action="{{ $isEdit ? route('habilidades.update', $item->HabilidadeID) : route('habilidades.store') }}"
+              method="POST"
+              enctype="multipart/form-data">
 
-            <select name="TecnicoID" id="TecnicoID" class="form-control" required>
-                <option value="">Selecione um técnico</option>
+            @csrf
 
-                @foreach($tecnicos as $tecnico)
-                    <option value="{{ $tecnico->TecnicoID }}"
-                        {{ old('TecnicoID', $data->TecnicoID ?? '') == $tecnico->TecnicoID ? 'selected' : '' }}>
-                        {{ $tecnico->user->nome_razao ?? 'Técnico #' . $tecnico->TecnicoID }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="descricao" class="form-label">Descrição da habilidade</label>
-
-            <textarea name="descricao" id="descricao" class="form-control" rows="4" required>{{ old('descricao', $data->descricao ?? '') }}</textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="cursos" class="form-label">Cursos ou certificados</label>
-
-            <input type="file" name="cursos" id="cursos" class="form-control">
-
-            @if(isset($data) && !empty($data->cursos))
-                <small class="text-muted">Já existe um arquivo anexado.</small>
+            @if($isEdit)
+                @method('PUT')
             @endif
-        </div>
 
-        <button type="submit" class="btn btn-success">
-            Salvar
-        </button>
+            <div class="mb-3">
+                <label for="TecnicoID" class="form-label fw-semibold">Técnico Responsável</label>
+                <select name="TecnicoID" id="TecnicoID" class="form-select rounded-3 py-2" required>
+                    <option value="">Selecione um técnico...</option>
+                    @foreach($tecnicos as $tecnico)
+                        <option value="{{ $tecnico->TecnicoID }}"
+                            {{ old('TecnicoID', $item->TecnicoID ?? '') == $tecnico->TecnicoID ? 'selected' : '' }}>
+                            {{ $tecnico->usuario->nome_razao ?? 'Técnico' }} (ID #{{ $tecnico->TecnicoID }})
+                        </option>
+                    @endforeach
+                </select>
+                <div class="form-text">Exibe o nome completo do técnico e seu identificador na plataforma.</div>
+            </div>
 
-        <a href="{{ route('habilidades.index') }}" class="btn btn-secondary">
-            Voltar
-        </a>
-    </form>
+            <div class="mb-3">
+                <label for="descricao" class="form-label fw-semibold">Descrição da Habilidade / Especialidade</label>
+                <textarea name="descricao" id="descricao" class="form-control rounded-3" rows="4" 
+                          placeholder="Ex: Manutenção em placas eletrônicas, reparo de compressores de ar-condicionado, etc."
+                          required>{{ old('descricao', $item->descricao ?? '') }}</textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="cursos" class="form-label fw-semibold">Certificado ou Comprovante de Curso (opcional)</label>
+                <input type="file" name="cursos" id="cursos" class="form-control rounded-3 py-2">
+                @if($isEdit && !empty($item->cursos))
+                    <div class="mt-2 text-success small font-weight-bold">
+                        ✓ Já existe um arquivo de comprovação anexado.
+                    </div>
+                @endif
+            </div>
+
+            <div class="d-flex items-center gap-2 pt-2">
+                <button type="submit" class="btn btn-primary rounded-pill px-4 py-2">
+                    Salvar Habilidade
+                </button>
+                <a href="{{ route('habilidades.index') }}" class="btn btn-light border rounded-pill px-4 py-2 text-muted">
+                    Voltar
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 
 @endsection

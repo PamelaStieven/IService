@@ -46,11 +46,12 @@ class HabilidadeController extends Controller
     private function validateForm(Request $request)
     {
         $request->validate([
-            'TecnicoID' => 'required|exists:Tecnicos,TecnicoID',
+            'TecnicoID' => 'required|exists:tecnicos,TecnicoID',
             'descricao' => 'required|string',
             'cursos'    => 'nullable',
         ], [
             'TecnicoID.required' => 'Selecione um técnico.',
+            'TecnicoID.exists'   => 'O técnico selecionado não foi encontrado.',
             'descricao.required' => 'A descrição da habilidade é obrigatória.',
         ]);
     }
@@ -67,7 +68,7 @@ class HabilidadeController extends Controller
     public function edit($id)
     {
         $dado = Habilidade::findOrFail($id);
-        $tecnicos = Tecnicos::with('user')->get();
+        $tecnicos = Tecnicos::with('usuario')->get();
         return view('habilidade.form', compact('dado', 'tecnicos'));
     }
 

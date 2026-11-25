@@ -3,21 +3,17 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('tecnicos', function (Blueprint $table) {
-            // Troca binary (blob) por string para armazenar o caminho do arquivo
-            $table->string('documento', 255)->nullable()->change();
-        });
+        DB::statement("ALTER TABLE tecnicos MODIFY documento VARCHAR(255) NULL");
     }
 
     public function down(): void
     {
-        Schema::table('tecnicos', function (Blueprint $table) {
-            $table->binary('documento')->nullable()->change();
-        });
+        DB::statement("ALTER TABLE tecnicos MODIFY documento BLOB NULL");
     }
 };

@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\EquipamentoController;
 use App\Http\Controllers\TecnicosController;
@@ -14,7 +16,24 @@ use App\Http\Controllers\LocacaoEquipController;
 use App\Http\Controllers\DadosBancariosController;
 use App\Http\Controllers\HabilidadeController;
 
-Route::get('/', [App\Http\Controllers\UsuarioController::class, 'index']);
+// --- AUTENTICAÇÃO E LANDING PAGE ---
+Route::get('/', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login.form');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'logout']);
+
+// Cadastro Público (Distinto do formulário administrativo)
+Route::get('/cadastrar/usuario', [AuthController::class, 'showRegisterUsuario'])->name('register.usuario');
+Route::post('/cadastrar/usuario', [AuthController::class, 'registerUsuario'])->name('register.usuario.submit');
+Route::get('/cadastrar/tecnico', [AuthController::class, 'showRegisterTecnico'])->name('register.tecnico');
+Route::post('/cadastrar/tecnico', [AuthController::class, 'registerTecnico'])->name('register.tecnico.submit');
+
+// --- DASHBOARDS ESPECÍFICOS & ANÁLISES & RELATÓRIOS ---
+Route::get('/dashboard/cliente', [DashboardController::class, 'cliente'])->name('cliente.dashboard');
+Route::get('/dashboard/tecnico', [DashboardController::class, 'tecnico'])->name('tecnico.dashboard');
+Route::get('/dashboard/graficos', [DashboardController::class, 'graficos'])->name('dashboard.graficos');
+Route::get('/relatorios', [DashboardController::class, 'relatorios'])->name('relatorios.index');
 
 Route::get('usuario/search', [UsuarioController::class, 'search'])->name('usuario.search');
 Route::resource('usuario', UsuarioController::class);

@@ -14,7 +14,7 @@ class Tecnicos extends Model
 {
     use HasFactory;
 
-    protected $table = 'Tecnicos';
+    protected $table = 'tecnicos';
     protected $primaryKey = 'TecnicoID';
     public $timestamps = false;
 

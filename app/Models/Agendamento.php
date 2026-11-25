@@ -9,7 +9,7 @@ class Agendamento extends Model
 {
     use HasFactory;
 
-    protected $table = 'Agendamento'; 
+    protected $table = 'agendamento'; 
     protected $primaryKey = 'AgendamentoID'; 
     public $timestamps = false; 
 
