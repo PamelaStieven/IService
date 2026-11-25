@@ -6,6 +6,7 @@ use App\Models\Usuario;
 use App\Models\Tecnicos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class TecnicosController extends Controller
 {
@@ -43,15 +44,23 @@ class TecnicosController extends Controller
         return view('Tecnicos.form', compact('dado'));
     }
 
-    private function validateForm(Request $request)
+    private function validateForm(Request $request, ?int $userId = null)
     {
+        $emailUnique = Rule::unique('usuario', 'email');
+        $cpfUnique = Rule::unique('usuario', 'cpf_cnpj');
+
+        if ($userId !== null) {
+            $emailUnique->ignore($userId, 'UserID');
+            $cpfUnique->ignore($userId, 'UserID');
+        }
+
         $request->validate([
             'nome_razao'      => 'required|string|max:55',
-            'email'           => 'required|email|max:55',
-            'cpf_cnpj'        => 'required|string|max:18',
-            'telefone'        => 'nullable|string|max:14',
-            'data_nascimento' => 'nullable|date',
-            'documento'       => 'nullable',
+            'email'           => ['required', 'email', 'max:55', $emailUnique],
+            'cpf_cnpj'        => ['required', 'string', 'max:18', $cpfUnique],
+            'telefone'        => 'required|string|max:14',
+            'data_nascimento' => 'required|date',
+            'documento'       => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:60',
         ], [
             'nome_razao.required' => 'O campo nome é obrigatório.',
             'email.required'      => 'O campo e-mail é obrigatório.',
@@ -66,7 +75,7 @@ class TecnicosController extends Controller
         $this->validateForm($request);
 
         DB::transaction(function () use ($request) {
-            $user = Usuario::create([
+            $usuario = Usuario::create([
                 'nome_razao'      => $request->input('nome_razao'),
                 'email'           => $request->input('email'),
                 'cpf_cnpj'        => $request->input('cpf_cnpj'),
@@ -76,8 +85,10 @@ class TecnicosController extends Controller
             ]);
 
             Tecnicos::create([
-                'UserID'    => $user->UserID,
-                'documento' => $request->input('documento'),
+                'UserID'    => $usuario->UserID,
+                'documento' => $request->hasFile('documento')
+                    ? $request->file('documento')->getContent()
+                    : null,
             ]);
         });
 
@@ -92,9 +103,8 @@ class TecnicosController extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->validateForm($request);
-
-        $tecnico = Tecnicos::findOrFail($id);
+        $tecnico = Tecnicos::with('usuario')->findOrFail($id);
+        $this->validateForm($request, $tecnico->UserID);
 
         DB::transaction(function () use ($request, $tecnico) {
             $tecnico->usuario->update([
@@ -105,9 +115,11 @@ class TecnicosController extends Controller
                 'telefone'        => $request->input('telefone'),
             ]);
 
-            $tecnico->update([
-                'documento' => $request->input('documento'),
-            ]);
+            if ($request->hasFile('documento')) {
+                $tecnico->update([
+                    'documento' => $request->file('documento')->getContent(),
+                ]);
+            }
         });
 
         return redirect()->route('tecnicos.index')->with('success', 'Técnico atualizado com sucesso!');
@@ -118,11 +130,11 @@ class TecnicosController extends Controller
         $tecnico = Tecnicos::findOrFail($id);
 
         DB::transaction(function () use ($tecnico) {
-            $user = $tecnico->usuario;
+            $usuario = $tecnico->usuario;
             
             $tecnico->delete(); 
-            if ($user) {
-                $user->delete(); 
+            if ($usuario) {
+                $usuario->delete(); 
             }
         });
 

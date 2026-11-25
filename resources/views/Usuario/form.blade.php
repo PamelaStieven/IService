@@ -19,7 +19,7 @@
 
     <header class="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-sm">
         <div class="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="{{ route('usuarios.index') }}" class="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-cobalto transition">
+            <a href="{{ route('usuario.index') }}" class="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-cobalto transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 Voltar para lista
             </a>
@@ -51,7 +51,7 @@
                 </div>
             @endif
 
-            <form action="{{ isset($usuario) ? route('usuarios.update', $usuario->UserID) : route('usuarios.store') }}" method="POST" class="space-y-5">
+            <form action="{{ isset($usuario) ? route('usuario.update', $usuario->UserID) : route('usuario.store') }}" method="POST" class="space-y-5">
                 @csrf
                 @if(isset($usuario))
                     @method('PUT')

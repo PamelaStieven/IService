@@ -15,7 +15,7 @@ class AgendamentoController extends Controller
         $valor = $request->input('valor');
         $tipo  = $request->input('tipo', 'status_servico');
 
-        $dados = Agendamento::with(['tecnico.user', 'servico', 'user'])
+        $dados = Agendamento::with(['tecnico.usuario', 'servico', 'usuario'])
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
                 $query->where($tipo, 'like', '%' . $valor . '%');
             })->get();
@@ -35,7 +35,7 @@ class AgendamentoController extends Controller
     public function create()
     {
         $dado = new Agendamento();
-        $tecnicos = Tecnicos::with('user')->get();
+        $tecnicos = Tecnicos::with('usuario')->get();
         $servicos = Servico::all();
         $usuarios = Usuario::all();
         return view('agendamento.form', compact('dado', 'tecnicos', 'servicos', 'usuarios'));
@@ -46,14 +46,14 @@ class AgendamentoController extends Controller
         $request->validate([
             'TecnicoID'        => 'required|exists:Tecnicos,TecnicoID',
             'ServicoID'        => 'required|exists:Servico,ServicoID',
-            'UserID'           => 'required|exists:User,UserID',
+            'usuarioID'           => 'required|exists:usuario,usuarioID',
             'data_hora_inicio' => 'required|date',
             'data_hora_fim'    => 'required|date|after:data_hora_inicio',
             'status_servico'   => 'required|in:Aceito,Pendente,Cancelado,Concluído',
         ], [
             'TecnicoID.required'        => 'Selecione um técnico.',
             'ServicoID.required'        => 'Selecione um serviço.',
-            'UserID.required'           => 'Selecione o cliente/usuário.',
+            'usuarioID.required'           => 'Selecione o cliente/usuário.',
             'data_hora_inicio.required' => 'Informe a data/hora inicial.',
             'data_hora_fim.required'    => 'Informe a data/hora final.',
             'data_hora_fim.after'       => 'A data final deve ser posterior à inicial.',
@@ -73,7 +73,7 @@ class AgendamentoController extends Controller
     public function edit($id)
     {
         $dado = Agendamento::findOrFail($id);
-        $tecnicos = Tecnicos::with('user')->get();
+        $tecnicos = Tecnicos::with('usuario')->get();
         $servicos = Servico::all();
         $usuarios = Usuario::all();
         return view('agendamento.form', compact('dado', 'tecnicos', 'servicos', 'usuarios'));

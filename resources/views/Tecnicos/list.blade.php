@@ -120,26 +120,63 @@
                             Editar
                         </a>
 
-                        <form action="{{ route('tecnicos.destroy', $tecnico->TecnicoID) }}" method="POST"
-                              onsubmit="return confirm('Tem certeza que deseja excluir este técnico?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                    class="px-4 py-1.5 rounded-full text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 transition">
-                                Excluir
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @empty
-                <div class="col-span-full bg-white rounded-2xl p-12 text-center border border-gray-100">
-                    <p class="text-gray-500 font-medium">Nenhum técnico cadastrado até o momento.</p>
-                    <a href="{{ route('tecnicos.create') }}" class="inline-block mt-3 text-sm font-semibold text-cobalto hover:underline">
-                        + Cadastrar o primeiro técnico
-                    </a>
-                </div>
-            @endforelse
-        </div>
-    </main>
-</body>
-</html>
+                @forelse($dados as $item)
+
+                    <tr>
+                        <td>{{ $item->TecnicoID }}</td>
+
+                        <td>{{ $item->usuario->nome_razao ?? '-' }}</td>
+
+                        <td>
+                            {{ !empty($item->documento) ? 'Anexado' : 'Não anexado' }}
+                        </td>
+
+                        <td class="text-center">
+
+                            <a
+                                href="{{ route('tecnicos.edit', $item->TecnicoID) }}"
+                                class="btn btn-warning btn-sm"
+                                title="Editar"
+                            >
+                                Editar
+                            </a>
+
+                            <form
+                                action="{{ route('tecnicos.destroy', $item->TecnicoID) }}"
+                                method="POST"
+                                class="d-inline"
+                            >
+                                @csrf
+                                @method('DELETE')
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Deseja realmente excluir?')"
+                                >
+                                    Deletar
+                                </button>
+                            </form>
+
+                        </td>
+                    </tr>
+
+                @empty
+
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            Nenhum técnico encontrado.
+                        </td>
+                    </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+@endsection

@@ -21,21 +21,39 @@
 <body class="text-gray-800 antialiased" x-data="{ search: '', filtroTipo: '' }">
 
     <header class="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-xl bg-cobalto flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                    IS
-                </div>
-                <span class="font-bold text-xl tracking-tight text-gray-900">IService</span>
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        
+        <!-- Logo e Nome -->
+        <div class="flex items-center gap-3">
+            <div class="bg-cobalto text-white font-bold w-10 h-10 rounded-xl flex items-center justify-center shadow-sm">
+                I
             </div>
+            <span class="font-bold text-lg text-gray-900">Service</span>
+        </div>
 
-            <a href="{{ route('usuarios.create') }}" 
-               class="bg-cobalto hover-bg-cobalto text-white font-semibold text-sm px-5 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center gap-2">
+        <nav class="hidden md:flex items-center gap-2">
+            <a href="{{ route('enderecos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
+               Endereços
+            </a>
+            <a href="{{ route('tecnicos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
+                Técnicos
+            </a>
+            <a href="{{ route('agendamentos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
+                Agendamentos
+            </a>
+            <a href="{{ route('equipamentos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
+                Equipamentos
+            </a>
+        </nav>
+
+        <div>
+            <a href="{{ route('usuario.create') }}" class="bg-cobalto hover-bg-cobalto text-white font-bold py-2.5 px-4 rounded-2xl shadow-sm hover:shadow transition-all text-sm flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Novo Usuário
             </a>
         </div>
-    </header>
+    </div>
+</header>
 
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
@@ -73,7 +91,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            @forelse($usuarios as $usuario)
+            @forelse($usuario as $usuario)
                 <div x-show="(search === '' || '{{ strtolower($usuario->nome_razao) }}'.includes(search.toLowerCase()) || '{{ $usuario->cpf_cnpj }}'.includes(search)) && (filtroTipo === '' || '{{ $usuario->tipo }}' === filtroTipo)"
                      x-transition
                      class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
@@ -116,12 +134,12 @@
                     </div>
 
                     <div class="mt-5 pt-3 border-t border-gray-100 flex items-center justify-end gap-2">
-                        <a href="{{ route('usuarios.edit', $usuario->UserID) }}" 
+                        <a href="{{ route('usuario.edit', $usuario->UserID) }}" 
                            class="px-4 py-1.5 rounded-full text-xs font-semibold text-cobalto bg-diamante-suave hover:bg-[#cceeff] transition">
                             Editar
                         </a>
 
-                        <form action="{{ route('usuarios.destroy', $usuario->UserID) }}" method="POST" 
+                        <form action="{{ route('usuario.destroy', $usuario->UserID) }}" method="POST" 
                               onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');">
                             @csrf
                             @method('DELETE')
@@ -135,7 +153,7 @@
             @empty
                 <div class="col-span-full bg-white rounded-2xl p-12 text-center border border-gray-100">
                     <p class="text-gray-500 font-medium">Nenhum usuário cadastrado até o momento.</p>
-                    <a href="{{ route('usuarios.create') }}" class="inline-block mt-3 text-sm font-semibold text-cobalto hover:underline">
+                    <a href="{{ route('usuario.create') }}" class="inline-block mt-3 text-sm font-semibold text-cobalto hover:underline">
                         + Cadastrar o primeiro usuário
                     </a>
                 </div>

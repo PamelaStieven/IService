@@ -4,19 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Tecnicos;
-use App\Models\Servico;
-use App\Models\Usuario;
-use App\Models\Pagamento;
-use App\Models\ItemServico;
 
 class Agendamento extends Model
 {
     use HasFactory;
 
-    protected $table = 'Agendamento';
-    protected $primaryKey = 'AgendamentoID';
-    public $timestamps = false;
+    protected $table = 'Agendamento'; 
+    protected $primaryKey = 'AgendamentoID'; 
+    public $timestamps = false; 
 
     protected $fillable = [
         'TecnicoID',
@@ -27,11 +22,7 @@ class Agendamento extends Model
         'status_servico',
     ];
 
-    protected $casts = [
-        'data_hora_inicio' => 'datetime',
-        'data_hora_fim'    => 'datetime',
-    ];
-
+    // Relacionamentos
     public function tecnico()
     {
         return $this->belongsTo(Tecnicos::class, 'TecnicoID', 'TecnicoID');
@@ -45,15 +36,5 @@ class Agendamento extends Model
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'UserID', 'UserID');
-    }
-
-    public function pagamento()
-    {
-        return $this->hasOne(Pagamento::class, 'AgendaID', 'AgendaID');
-    }
-
-    public function itensServico()
-    {
-        return $this->hasMany(ItemServico::class, 'AgendamentoID', 'AgendaID');
     }
 }
