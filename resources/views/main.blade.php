@@ -48,46 +48,8 @@
 </head>
 <body>
 
-    <!-- Barra de Navegação Superior Exatamente como na Referência -->
-    <nav class="navbar navbar-expand-lg navbar-iservice sticky-top">
-        <div class="container-fluid px-4">
-            
-            <!-- Esquerda: Logo "I" + "Service" -->
-            <a class="navbar-brand d-flex align-items-center text-decoration-none me-auto" href="{{ route('equipamentos.index') }}">
-                <div class="logo-box me-2">I</div>
-                <span class="fw-bold fs-4 text-dark tracking-tight">Service</span>
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <!-- Centro: Links de Navegação -->
-            <div class="collapse navbar-collapse justify-content-center" id="navbarContent">
-                <ul class="navbar-nav mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="{{ route('enderecos.index') }}">Endereços</a>
-                    </li>
-                    <li class="nav-item">
-                         <a class="nav-link nav-link-custom" href="{{ route('tecnicos.index') }}">Técnicos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="{{ route('agendamentos.index') }}">Agendamentos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-custom active" href="{{ route('equipamentos.index') }}">Equipamentos</a>
-                    </li>
-            
-                </ul>
-            </div>
-
-            <!-- Direita: Botão de Ação Dinâmico -->
-            <div class="ms-auto d-none d-lg-block">
-                @yield('botao_topo')
-            </div>
-
-        </div>
-    </nav>
+    <!-- Barra de Navegação Superior Unificada -->
+    @include('navbar')
 
     <!-- Conteúdo Dinâmico -->
     <main class="py-4">

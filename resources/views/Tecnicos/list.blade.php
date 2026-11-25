@@ -20,19 +20,7 @@
 </head>
 <body class="text-gray-800 antialiased" x-data="{ search: '' }">
 
-    <header class="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-xl bg-cobalto flex items-center justify-center text-white font-bold text-lg shadow-sm">IS</div>
-                <span class="font-bold text-xl tracking-tight text-gray-900">IService</span>
-            </div>
-            <a href="{{ route('tecnicos.create') }}"
-               class="bg-cobalto hover-bg-cobalto text-white font-semibold text-sm px-5 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                Novo Técnico
-            </a>
-        </div>
-    </header>
+    @include('navbar')
 
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
@@ -60,12 +48,19 @@
                 <h1 class="text-2xl font-bold text-gray-900">Técnicos Cadastrados</h1>
                 <p class="text-sm text-gray-500 mt-0.5">Gerencie os técnicos vinculados à plataforma.</p>
             </div>
-            <div class="relative">
-                <input type="text" x-model="search" placeholder="Buscar por nome, e-mail ou CPF..."
-                       class="w-full sm:w-72 pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/10 transition">
-                <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div class="relative">
+                    <input type="text" x-model="search" placeholder="Buscar por nome, e-mail ou CPF..."
+                           class="w-full sm:w-72 pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/10 transition">
+                    <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <a href="{{ route('tecnicos.create') }}"
+                   class="bg-cobalto hover-bg-cobalto text-white font-semibold text-sm px-5 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Novo Técnico
+                </a>
             </div>
         </div>
 

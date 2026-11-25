@@ -26,7 +26,7 @@
                 @foreach($tecnicos as $tecnico)
                     <option value="{{ $tecnico->TecnicoID }}"
                         {{ old('TecnicoID', $data->TecnicoID ?? '') == $tecnico->TecnicoID ? 'selected' : '' }}>
-                        {{ $tecnico->user->nome_razao ?? 'Técnico #' . $tecnico->TecnicoID }}
+                        {{ $tecnico->usuario->nome_razao ?? 'Técnico #' . $tecnico->TecnicoID }}
                     </option>
                 @endforeach
             </select>

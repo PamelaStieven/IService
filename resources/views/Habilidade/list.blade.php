@@ -27,7 +27,7 @@
             @forelse($dados as $item)
                 <tr>
                     <td>{{ $item->HabilidadeID }}</td>
-                    <td>{{ $item->tecnico->user->nome_razao ?? 'Não informado' }}</td>
+                    <td>{{ $item->tecnico->usuario->nome_razao ?? 'Não informado' }}</td>
                     <td>{{ $item->descricao }}</td>
                     <td>
                         {{ !empty($item->cursos) ? 'Arquivo anexado' : 'Sem arquivo' }}

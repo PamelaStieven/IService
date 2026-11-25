@@ -31,7 +31,7 @@
             @forelse($dados as $item)
                 <tr>
                     <td>{{ $item->ContaID }}</td>
-                    <td>{{ $item->tecnico->user->nome_razao ?? 'Não informado' }}</td>
+                    <td>{{ $item->tecnico->usuario->nome_razao ?? 'Não informado' }}</td>
                     <td>{{ $item->banco }}</td>
                     <td>{{ $item->agencia }}</td>
                     <td>{{ $item->numero_conta }}</td>

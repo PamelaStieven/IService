@@ -13,10 +13,10 @@ class DadosBancariosController extends Controller
         $valor = $request->input('valor');
         $tipo  = $request->input('tipo', 'banco');
 
-        $dados = DadosBancarios::with('tecnico.user')
+        $dados = DadosBancarios::with('tecnico.usuario')
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
                 if ($tipo === 'tecnico') {
-                    $query->whereHas('tecnico.user', function ($q) use ($valor) {
+                    $query->whereHas('tecnico.usuario', function ($q) use ($valor) {
                         $q->where('nome_razao', 'like', '%' . $valor . '%');
                     });
                 } else {
@@ -39,7 +39,7 @@ class DadosBancariosController extends Controller
     public function create()
     {
         $dado = new DadosBancarios();
-        $tecnicos = Tecnicos::with('user')->get();
+        $tecnicos = Tecnicos::with('usuario')->get();
         return view('dados_bancarios.form', compact('dado', 'tecnicos'));
     }
 
@@ -76,7 +76,7 @@ class DadosBancariosController extends Controller
     public function edit($id)
     {
         $dado = DadosBancarios::findOrFail($id);
-        $tecnicos = Tecnicos::with('user')->get();
+        $tecnicos = Tecnicos::with('usuario')->get();
         return view('dados_bancarios.form', compact('dado', 'tecnicos'));
     }
 

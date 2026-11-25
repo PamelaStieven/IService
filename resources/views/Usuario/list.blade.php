@@ -20,40 +20,7 @@
 </head>
 <body class="text-gray-800 antialiased" x-data="{ search: '', filtroTipo: '' }">
 
-    <header class="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        
-        <!-- Logo e Nome -->
-        <div class="flex items-center gap-3">
-            <div class="bg-cobalto text-white font-bold w-10 h-10 rounded-xl flex items-center justify-center shadow-sm">
-                I
-            </div>
-            <span class="font-bold text-lg text-gray-900">Service</span>
-        </div>
-
-        <nav class="hidden md:flex items-center gap-2">
-            <a href="{{ route('enderecos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
-               Endereços
-            </a>
-            <a href="{{ route('tecnicos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
-                Técnicos
-            </a>
-            <a href="{{ route('agendamentos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
-                Agendamentos
-            </a>
-            <a href="{{ route('equipamentos.index') }}" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-cobalto transition">
-                Equipamentos
-            </a>
-        </nav>
-
-        <div>
-            <a href="{{ route('usuario.create') }}" class="bg-cobalto hover-bg-cobalto text-white font-bold py-2.5 px-4 rounded-2xl shadow-sm hover:shadow transition-all text-sm flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                Novo Usuário
-            </a>
-        </div>
-    </div>
-</header>
+    @include('navbar')
 
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
@@ -74,7 +41,7 @@
                 <p class="text-sm text-gray-500 mt-0.5">Gerencie técnicos, administradores e clientes da plataforma.</p>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <div class="relative">
                     <input type="text" x-model="search" placeholder="Buscar por nome ou CPF..."
                            class="w-full sm:w-64 pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/10 transition">
@@ -87,6 +54,12 @@
                     <option value="Administrador">Administrador</option>
                     <option value="Usuário">Usuário</option>
                 </select>
+
+                <a href="{{ route('usuario.create') }}" 
+                   class="bg-cobalto hover-bg-cobalto text-white font-semibold text-sm px-5 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Novo Usuário
+                </a>
             </div>
         </div>
 

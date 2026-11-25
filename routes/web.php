@@ -18,6 +18,8 @@ Route::get('/', [App\Http\Controllers\UsuarioController::class, 'index']);
 
 Route::get('usuario/search', [UsuarioController::class, 'search'])->name('usuario.search');
 Route::resource('usuario', UsuarioController::class);
+Route::get('usuarios/search', [UsuarioController::class, 'search'])->name('usuarios.search');
+Route::resource('usuarios', UsuarioController::class);
 
 Route::get('equipamentos/search', [EquipamentoController::class, 'search'])->name('equipamentos.search');
 Route::resource('equipamentos', EquipamentoController::class);
@@ -31,6 +33,8 @@ Route::resource('enderecos', EnderecosController::class);
 
 Route::get('servicos/search', [ServicoController::class, 'search'])->name('servicos.search');
 Route::resource('servicos', ServicoController::class);
+Route::get('servico/search', [ServicoController::class, 'search'])->name('servico.search');
+Route::resource('servico', ServicoController::class);
 
 Route::get('agendamentos/search', [AgendamentoController::class, 'search'])->name('agendamentos.search');
 Route::resource('agendamentos', AgendamentoController::class)->parameters([
@@ -48,6 +52,10 @@ Route::resource('locacoes-equipamentos', LocacaoEquipController::class);
 
 Route::get('dados-bancarios/search', [DadosBancariosController::class, 'search'])->name('dados-bancarios.search');
 Route::resource('dados-bancarios', DadosBancariosController::class);
+Route::get('dadosbancarios/search', [DadosBancariosController::class, 'search'])->name('dadosbancarios.search');
+Route::resource('dadosbancarios', DadosBancariosController::class);
+Route::get('dados_bancarios/search', [DadosBancariosController::class, 'search'])->name('dados_bancarios.search');
+Route::resource('dados_bancarios', DadosBancariosController::class);
 
 Route::get('habilidades/search', [HabilidadeController::class, 'search'])->name('habilidades.search');
 Route::resource('habilidades', HabilidadeController::class);

@@ -13,10 +13,10 @@ class HabilidadeController extends Controller
         $valor = $request->input('valor');
         $tipo  = $request->input('tipo', 'descricao');
 
-        $dados = Habilidade::with('tecnico.user')
+        $dados = Habilidade::with('tecnico.usuario')
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
                 if ($tipo === 'tecnico') {
-                    $query->whereHas('tecnico.user', function ($q) use ($valor) {
+                    $query->whereHas('tecnico.usuario', function ($q) use ($valor) {
                         $q->where('nome_razao', 'like', '%' . $valor . '%');
                     });
                 } else {
@@ -39,7 +39,7 @@ class HabilidadeController extends Controller
     public function create()
     {
         $dado = new Habilidade();
-        $tecnicos = Tecnicos::with('user')->get();
+        $tecnicos = Tecnicos::with('usuario')->get();
         return view('habilidade.form', compact('dado', 'tecnicos'));
     }
 
