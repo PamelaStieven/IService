@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Servico;
-use App\Models\Agendamento;
 
 class ItemServico extends Model
 {
@@ -28,7 +26,7 @@ class ItemServico extends Model
 
     public function agendamento()
     {
-        return $this->belongsTo(Agendamento::class, 'AgendamentoID', 'AgendaID');
+        return $this->belongsTo(Agendamento::class, 'AgendamentoID', 'AgendamentoID');
     }
 
     public function servico()

@@ -71,10 +71,6 @@ Route::resource('locacoes-equipamentos', LocacaoEquipController::class);
 
 Route::get('dados-bancarios/search', [DadosBancariosController::class, 'search'])->name('dados-bancarios.search');
 Route::resource('dados-bancarios', DadosBancariosController::class);
-Route::get('dadosbancarios/search', [DadosBancariosController::class, 'search'])->name('dadosbancarios.search');
-Route::resource('dadosbancarios', DadosBancariosController::class);
-Route::get('dados_bancarios/search', [DadosBancariosController::class, 'search'])->name('dados_bancarios.search');
-Route::resource('dados_bancarios', DadosBancariosController::class);
 
 Route::get('habilidades/search', [HabilidadeController::class, 'search'])->name('habilidades.search');
 Route::resource('habilidades', HabilidadeController::class);
