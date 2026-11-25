@@ -23,6 +23,7 @@ Route::get('equipamentos/search', [EquipamentoController::class, 'search'])->nam
 Route::resource('equipamentos', EquipamentoController::class);
 
 Route::get('tecnicos/search', [TecnicosController::class, 'search'])->name('tecnicos.search');
+Route::get('tecnicos/{tecnico}/certificado', [TecnicosController::class, 'certificado'])->name('tecnicos.certificado');
 Route::resource('tecnicos', TecnicosController::class);
 
 Route::get('enderecos/search', [EnderecosController::class, 'search'])->name('enderecos.search');

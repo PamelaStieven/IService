@@ -13,6 +13,7 @@
         .hover-bg-cobalto:hover { background-color: #003580; }
         .text-cobalto { color: #0047AB; }
         .bg-diamante-suave { background-color: #E6F7FF; }
+        .border-diamante { border-color: #B3E5FC; }
     </style>
 </head>
 <body class="text-gray-800 antialiased" x-data="formMasks()">
@@ -51,102 +52,21 @@
                 </div>
             @endif
 
+            {{-- enctype obrigatório para upload de arquivo --}}
             <form action="{{ $dado->exists ? route('tecnicos.update', $dado->TecnicoID) : route('tecnicos.store') }}"
-                  method="POST" class="space-y-5">
+                  method="POST" enctype="multipart/form-data" class="space-y-5">
                 @csrf
                 @if($dado->exists)
                     @method('PUT')
                 @endif
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="nome_razao" class="form-label">Nome completo ou razão social *</label>
-                        <input
-                            type="text"
-                            name="nome_razao"
-                            id="nome_razao"
-                            class="form-control"
-                            maxlength="55"
-                            value="{{ old('nome_razao', $dado->usuario->nome_razao ?? '') }}"
-                            required
-                        >
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="email" class="form-label">E-mail *</label>
-                        <input
-                            type="email"
-                            name="email"
-                            id="email"
-                            class="form-control"
-                            maxlength="55"
-                            value="{{ old('email', $dado->usuario->email ?? '') }}"
-                            required
-                        >
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="cpf_cnpj" class="form-label">CPF ou CNPJ *</label>
-                        <input
-                            type="text"
-                            name="cpf_cnpj"
-                            id="cpf_cnpj"
-                            class="form-control"
-                            maxlength="18"
-                            value="{{ old('cpf_cnpj', $dado->usuario->cpf_cnpj ?? '') }}"
-                            required
-                        >
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="telefone" class="form-label">Telefone *</label>
-                        <input
-                            type="text"
-                            name="telefone"
-                            id="telefone"
-                            class="form-control"
-                            maxlength="14"
-                            value="{{ old('telefone', $dado->usuario->telefone ?? '') }}"
-                            required
-                        >
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="data_nascimento" class="form-label">Data de nascimento *</label>
-                        <input
-                            type="date"
-                            name="data_nascimento"
-                            id="data_nascimento"
-                            class="form-control"
-                            value="{{ old('data_nascimento', isset($dado->usuario->data_nascimento) ? $dado->usuario->data_nascimento->format('Y-m-d') : '') }}"
-                            required
-                        >
-                    </div>
-
-                    <div class="col-md-6">
-
-                        <label for="documento" class="form-label">
-                            Documento
-                        </label>
-
-                        <input
-                            type="file"
-                            name="documento"
-                            id="documento"
-                            class="form-control"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                        >
-
-                        @if(isset($dado->TecnicoID) && !empty($dado->documento))
-                            <small class="text-success">
-                                Já existe um documento cadastrado.
-                                Envie outro somente se desejar substituí-lo.
-                            </small>
-                        @endif
-                        <small class="form-text text-muted">Arquivo opcional, até 60 KB.</small>
-
-                    </div>
-
+                {{-- Nome --}}
+                <div>
+                    <label for="nome_razao" class="block text-sm font-semibold text-gray-700 mb-1.5">Nome Completo</label>
+                    <input type="text" id="nome_razao" name="nome_razao" maxlength="55" required
+                           value="{{ old('nome_razao', $dado->usuario->nome_razao ?? '') }}"
+                           placeholder="Ex: João da Silva"
+                           class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
                 </div>
 
                 {{-- E-mail --}}
@@ -167,7 +87,6 @@
                                placeholder="000.000.000-00"
                                class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
                     </div>
-
                     <div>
                         <label for="telefone" class="block text-sm font-semibold text-gray-700 mb-1.5">Telefone / WhatsApp</label>
                         <input type="text" id="telefone" name="telefone" maxlength="14"
@@ -185,17 +104,68 @@
                            class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
                 </div>
 
-                {{-- Documento (campo exclusivo do técnico) --}}
-                <div>
-                    <label for="documento" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                        Documento
-                        <span class="text-gray-400 font-normal">(opcional — CREA, CRQ, etc.)</span>
+                {{-- Certificado / Documento --}}
+                <div x-data="{ fileName: '', isDragging: false }"
+                     @dragover.prevent="isDragging = true"
+                     @dragleave.prevent="isDragging = false"
+                     @drop.prevent="isDragging = false; fileName = $event.dataTransfer.files[0]?.name ?? ''">
+
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+                        Certificado / Documento Profissional
+                        @if(!$dado->exists)
+                            <span class="text-gray-400 font-normal">(opcional)</span>
+                        @else
+                            <span class="text-gray-400 font-normal">(deixe em branco para manter o atual)</span>
+                        @endif
                     </label>
-                    <input type="text" id="documento" name="documento"
-                           value="{{ old('documento', $dado->documento ?? '') }}"
-                           placeholder="Ex: CREA-SP 123456"
-                           class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+
+                    {{-- Prévia do certificado atual (modo edição) --}}
+                    @if($dado->exists && $dado->documento)
+                        <div class="mb-3 flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-2xl">
+                            <svg class="w-8 h-8 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold text-green-800 truncate">Certificado já enviado</p>
+                                <p class="text-xs text-green-600 truncate">{{ basename($dado->documento) }}</p>
+                            </div>
+                            <a href="{{ route('tecnicos.certificado', $dado->TecnicoID) }}"
+                               target="_blank"
+                               class="text-xs font-semibold text-cobalto hover:underline whitespace-nowrap">
+                                Visualizar
+                            </a>
+                        </div>
+                    @endif
+
+                    {{-- Área de drag-and-drop --}}
+                    <label for="documento"
+                           :class="isDragging ? 'border-[#0047AB] bg-[#E6F7FF]' : 'border-gray-200 bg-gray-50 hover:bg-[#f0f9ff]'"
+                           class="flex flex-col items-center justify-center gap-2 w-full px-4 py-8 rounded-2xl border-2 border-dashed cursor-pointer transition">
+                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <div class="text-center">
+                            <p class="text-sm font-semibold text-gray-700" x-text="fileName || 'Clique ou arraste o arquivo aqui'"></p>
+                            <p class="text-xs text-gray-400 mt-0.5">PDF, JPG ou PNG · máx. 5 MB</p>
+                        </div>
+                        <input id="documento" name="documento" type="file"
+                               accept=".pdf,.jpg,.jpeg,.png"
+                               class="sr-only"
+                               @change="fileName = $event.target.files[0]?.name ?? ''">
+                    </label>
                 </div>
+
+                {{-- Nota sobre conta bancária --}}
+                @if($dado->exists)
+                    <div class="p-4 bg-diamante-suave border border-diamante rounded-2xl text-sm text-cobalto flex items-start gap-3">
+                        <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <div>
+                            <p class="font-semibold">Dados bancários</p>
+                            <p class="text-xs mt-0.5 text-blue-700">
+                                Os dados bancários do técnico são gerenciados em
+                                <a href="{{ route('dados-bancarios.index') }}" class="font-bold underline">Dados Bancários</a>.
+                            </p>
+                        </div>
+                    </div>
+                @endif
 
                 {{-- Botão --}}
                 <div class="pt-4">

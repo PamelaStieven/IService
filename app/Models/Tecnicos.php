@@ -20,7 +20,7 @@ class Tecnicos extends Model
 
     protected $fillable = [
         'UserID',
-        'documento',
+        'documento',   // caminho relativo do arquivo de certificado em storage/app/public/certificados/
     ];
 
     public function usuario()
