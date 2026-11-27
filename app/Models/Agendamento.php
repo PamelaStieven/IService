@@ -20,6 +20,7 @@ class Agendamento extends Model
         'data_hora_inicio',
         'data_hora_fim',
         'status_servico',
+        'metodo_pagamento',
     ];
 
     // Relacionamentos
@@ -36,5 +37,10 @@ class Agendamento extends Model
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'UserID', 'UserID');
+    }
+
+    public function pagamento()
+    {
+        return $this->hasOne(Pagamento::class, 'AgendamentoID', 'AgendamentoID');
     }
 }

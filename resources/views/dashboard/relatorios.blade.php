@@ -30,25 +30,25 @@
     <div class="row g-3 mb-4">
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-4 p-4 text-white" style="background: linear-gradient(135deg, #0047AB, #0095D9);">
-                <span class="text-white-50 text-uppercase fw-semibold" style="font-size: 0.75rem;">Faturamento Bruto Total</span>
+                <span class="text-white-50 text-uppercase fw-semibold" style="font-size: 0.75rem;">Pagamentos Registrados</span>
                 <h3 class="fw-bold my-1">R$ {{ number_format($faturamentoTotal, 2, ',', '.') }}</h3>
-                <span class="text-white-50 small">Volume total transacionado</span>
+                <span class="text-white-50 small">Valores pagos e pendentes</span>
             </div>
         </div>
 
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-4 p-4 text-white" style="background: linear-gradient(135deg, #059669, #10b981);">
-                <span class="text-white-50 text-uppercase fw-semibold" style="font-size: 0.75rem;">Repasse Líquido aos Técnicos</span>
+                <span class="text-white-50 text-uppercase fw-semibold" style="font-size: 0.75rem;">Repasse Previsto aos Técnicos</span>
                 <h3 class="fw-bold my-1">R$ {{ number_format($repassesTecnico, 2, ',', '.') }}</h3>
-                <span class="text-white-50 small">Créditos pagos aos profissionais</span>
+                <span class="text-white-50 small">Após comissão da plataforma</span>
             </div>
         </div>
 
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-4 p-4 text-white" style="background: linear-gradient(135deg, #475569, #1e293b);">
-                <span class="text-white-50 text-uppercase fw-semibold" style="font-size: 0.75rem;">Taxa do Site Retida</span>
+                <span class="text-white-50 text-uppercase fw-semibold" style="font-size: 0.75rem;">Comissão da Plataforma</span>
                 <h3 class="fw-bold my-1">R$ {{ number_format($taxaSiteTotal, 2, ',', '.') }}</h3>
-                <span class="text-white-50 small">Receita líquida IService</span>
+                <span class="text-white-50 small">Comissões em pagamentos registrados</span>
             </div>
         </div>
     </div>
@@ -114,7 +114,8 @@
                 <tbody>
                     @forelse($pagamentos as $pag)
                         @php
-                            $repasse = $pag->valor_total - $pag->taxa_site;
+                            $taxaPagamento = $pag->comissao_empresa ?? $pag->taxa_site;
+                            $repasse = $pag->valor_total - $taxaPagamento;
                         @endphp
                         <tr>
                             <td class="ps-4 fw-bold text-muted">#{{ $pag->PagamentoID }}</td>
@@ -135,7 +136,7 @@
                                 </span>
                             </td>
                             <td class="fw-bold text-dark">R$ {{ number_format($pag->valor_total, 2, ',', '.') }}</td>
-                            <td class="text-danger small">R$ {{ number_format($pag->taxa_site, 2, ',', '.') }}</td>
+                            <td class="text-danger small">R$ {{ number_format($taxaPagamento, 2, ',', '.') }}</td>
                             <td class="text-success fw-semibold">R$ {{ number_format($repasse, 2, ',', '.') }}</td>
                             <td>
                                 @if($pag->status_pagamento)

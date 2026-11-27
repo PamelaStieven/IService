@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Usuario;
 use App\Models\Tecnicos;
-use App\Models\Habilidade;
 use App\Rules\CpfCnpjValido;
+use App\Services\SalvarHabilidadesTecnico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -61,7 +61,10 @@ class TecnicosController extends Controller
             'telefone'        => 'required|string|max:14',
             'data_nascimento' => 'required|date',
             'foto'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'habilidades'     => 'required|string|max:5000',
+            'habilidades'     => 'required|array|min:1',
+            'habilidades.*.id' => 'nullable|integer|distinct',
+            'habilidades.*.descricao' => 'required|string|max:300|distinct',
+            'habilidades.*.cursos' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'password'        => $tecnico ? 'nullable|string|min:6|confirmed' : 'required|string|min:6|confirmed',
             'documento'       => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'banco'            => 'required|string|max:55',
@@ -79,7 +82,15 @@ class TecnicosController extends Controller
             'password.required'   => 'A senha é obrigatória no cadastro.',
             'password.min'        => 'A senha deve conter no mínimo 6 caracteres.',
             'password.confirmed'  => 'A confirmação de senha não confere.',
-            'habilidades.required' => 'Informe pelo menos uma habilidade, uma por linha.',
+            'habilidades.required' => 'Informe pelo menos uma habilidade.',
+            'habilidades.array' => 'As habilidades enviadas são inválidas.',
+            'habilidades.min' => 'Informe pelo menos uma habilidade.',
+            'habilidades.*.descricao.required' => 'Informe o nome de cada habilidade.',
+            'habilidades.*.descricao.max' => 'Cada habilidade deve ter no máximo 300 caracteres.',
+            'habilidades.*.descricao.distinct' => 'Não repita a mesma habilidade.',
+            'habilidades.*.cursos.file' => 'O comprovante da habilidade deve ser um arquivo.',
+            'habilidades.*.cursos.mimes' => 'O comprovante deve ser PDF, JPG ou PNG.',
+            'habilidades.*.cursos.max' => 'O comprovante deve ter no máximo 5 MB.',
             'documento.file'       => 'O certificado deve ser um arquivo.',
             'documento.mimes'      => 'O certificado deve ser PDF, JPG ou PNG.',
             'documento.max'        => 'O certificado deve ter no máximo 5 MB.',
@@ -92,7 +103,7 @@ class TecnicosController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, SalvarHabilidadesTecnico $salvarHabilidades)
     {
         $dados = $this->validateForm($request);
         $foto = null;
@@ -118,7 +129,7 @@ class TecnicosController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($dados, $foto, $caminhoCertificado) {
+            DB::transaction(function () use ($dados, $foto, $caminhoCertificado, $salvarHabilidades) {
                 $user = Usuario::create([
                     'nome_razao'      => $dados['nome_razao'],
                     'email'           => $dados['email'],
@@ -136,7 +147,7 @@ class TecnicosController extends Controller
                 ]);
 
                 $tecnico->dadosBancarios()->create($this->bankFields($dados));
-                $this->saveHabilidades($tecnico, $dados['habilidades']);
+                $salvarHabilidades->sincronizar($tecnico, $dados['habilidades']);
             });
         } catch (\Throwable $exception) {
             foreach ([$foto, $caminhoCertificado] as $path) {
@@ -163,32 +174,13 @@ class TecnicosController extends Controller
         ];
     }
 
-    private function saveHabilidades(Tecnicos $tecnico, string $habilidades): void
-    {
-        $descricoes = collect(preg_split('/\r\n|\r|\n/', $habilidades))
-            ->map(function ($descricao) {
-                return trim($descricao);
-            })
-            ->filter()
-            ->unique()
-            ->values();
-
-        foreach ($descricoes as $descricao) {
-            $tecnico->habilidades()->firstOrCreate(['descricao' => $descricao]);
-        }
-
-        if ($descricoes->isNotEmpty()) {
-            $tecnico->habilidades()->whereNotIn('descricao', $descricoes->all())->delete();
-        }
-    }
-
     public function edit($id)
     {
         $dado = Tecnicos::with(['usuario', 'dadosBancarios'])->findOrFail($id);
         return view('Tecnicos.form', compact('dado'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, SalvarHabilidadesTecnico $salvarHabilidades)
     {
         $tecnico = Tecnicos::with(['usuario', 'dadosBancarios'])->findOrFail($id);
         $dados = $this->validateForm($request, $tecnico);
@@ -217,7 +209,7 @@ class TecnicosController extends Controller
         $certificadoAnterior = $tecnico->documento;
         $fotoAnterior = $tecnico->usuario->foto;
         try {
-            DB::transaction(function () use ($dados, $tecnico, $foto, $caminhoCertificado) {
+            DB::transaction(function () use ($dados, $tecnico, $foto, $caminhoCertificado, $salvarHabilidades) {
                 $usuarioDados = [
                     'nome_razao'      => $dados['nome_razao'],
                     'email'           => $dados['email'],
@@ -242,7 +234,7 @@ class TecnicosController extends Controller
                     ['TecnicoID' => $tecnico->TecnicoID],
                     $this->bankFields($dados)
                 );
-                $this->saveHabilidades($tecnico, $dados['habilidades']);
+                $salvarHabilidades->sincronizar($tecnico, $dados['habilidades']);
             });
         } catch (\Throwable $exception) {
             foreach ([$foto, $caminhoCertificado] as $path) {

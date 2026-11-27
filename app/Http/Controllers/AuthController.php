@@ -6,8 +6,8 @@ use App\Models\Usuario;
 use App\Models\Tecnicos;
 use App\Models\Enderecos;
 use App\Models\DadosBancarios;
-use App\Models\Habilidade;
 use App\Rules\CpfCnpjValido;
+use App\Services\SalvarHabilidadesTecnico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -201,7 +201,7 @@ class AuthController extends Controller
     /**
      * Processa o cadastro público de Técnico Parceiro.
      */
-    public function registerTecnico(Request $request)
+    public function registerTecnico(Request $request, SalvarHabilidadesTecnico $salvarHabilidades)
     {
         $dados = $request->validate([
             'nome_razao'      => 'required|string|max:55',
@@ -211,7 +211,10 @@ class AuthController extends Controller
             'telefone'        => 'required|string|max:14',
             'data_nascimento' => 'required|date',
             'foto'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'habilidades'     => 'required|string|max:5000',
+            'habilidades'     => 'required|array|min:1',
+            'habilidades.*.id' => 'nullable|integer|distinct',
+            'habilidades.*.descricao' => 'required|string|max:300|distinct',
+            'habilidades.*.cursos' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'documento'       => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'banco'            => 'required|string|max:55',
             'agencia'          => 'required|string|max:6',
@@ -232,7 +235,15 @@ class AuthController extends Controller
             'telefone.required'        => 'O telefone é obrigatório.',
             'data_nascimento.required' => 'A data de nascimento é obrigatória.',
             'data_nascimento.date'     => 'Informe uma data válida.',
-            'habilidades.required'     => 'Informe suas habilidades, uma por linha.',
+            'habilidades.required'     => 'Informe pelo menos uma habilidade.',
+            'habilidades.array'        => 'As habilidades enviadas são inválidas.',
+            'habilidades.min'          => 'Informe pelo menos uma habilidade.',
+            'habilidades.*.descricao.required' => 'Informe o nome de cada habilidade.',
+            'habilidades.*.descricao.max' => 'Cada habilidade deve ter no máximo 300 caracteres.',
+            'habilidades.*.descricao.distinct' => 'Não repita a mesma habilidade.',
+            'habilidades.*.cursos.file' => 'O comprovante da habilidade deve ser um arquivo.',
+            'habilidades.*.cursos.mimes' => 'O comprovante deve ser PDF, JPG ou PNG.',
+            'habilidades.*.cursos.max' => 'O comprovante deve ter no máximo 5 MB.',
             'documento.file'           => 'O certificado deve ser um arquivo.',
             'documento.mimes'          => 'O certificado deve ser um arquivo PDF, JPG ou PNG.',
             'documento.max'            => 'O arquivo de certificado não pode ultrapassar 5 MB.',
@@ -268,7 +279,7 @@ class AuthController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($dados, $foto, $caminhoCertificado, &$usuario) {
+            DB::transaction(function () use ($dados, $foto, $caminhoCertificado, &$usuario, $salvarHabilidades) {
             $usuario = Usuario::create([
                 'nome_razao'      => $dados['nome_razao'],
                 'email'           => $dados['email'],
@@ -294,12 +305,7 @@ class AuthController extends Controller
                 'titular'          => $dados['titular'],
                 'cpf_cnpj_titular' => $dados['cpf_cnpj_titular'],
             ]);
-            foreach ($this->habilidadeDescriptions($dados['habilidades']) as $descricao) {
-                Habilidade::create([
-                    'TecnicoID' => $tecnico->TecnicoID,
-                    'descricao' => $descricao,
-                ]);
-            }
+            $salvarHabilidades->sincronizar($tecnico, $dados['habilidades']);
             });
         } catch (\Throwable $exception) {
             foreach ([$foto, $caminhoCertificado] as $path) {
@@ -316,18 +322,6 @@ class AuthController extends Controller
 
         return redirect()->route('tecnico.dashboard')
             ->with('success', 'Cadastro de técnico parceiro concluído! Bem-vindo(a) à plataforma IService.');
-    }
-
-    private function habilidadeDescriptions(string $habilidades): array
-    {
-        return collect(preg_split('/\r\n|\r|\n/', $habilidades))
-            ->map(function ($descricao) {
-                return trim($descricao);
-            })
-            ->filter()
-            ->unique()
-            ->values()
-            ->all();
     }
 
     /**

@@ -105,7 +105,8 @@ class ReportController extends Controller
             case 'pagamentos':
                 $colunas = ['id' => 'ID', 'agendamento' => 'Agendamento', 'locacao' => 'Locação', 'metodo' => 'Método', 'valor' => 'Valor total', 'taxa' => 'Taxa da plataforma', 'status' => 'Pago', 'data' => 'Data do pagamento'];
                 $linhas = DB::table('pagamentos')
-                    ->select('PagamentoID as id', 'AgendamentoID as agendamento', 'LocEquipID as locacao', 'metodo', 'valor_total as valor', 'taxa_site as taxa')
+                    ->select('PagamentoID as id', 'AgendamentoID as agendamento', 'LocEquipID as locacao', 'metodo', 'valor_total as valor')
+                    ->selectRaw('COALESCE(comissao_empresa, taxa_site) as taxa')
                     ->selectRaw("CASE WHEN status_pagamento = 1 THEN 'Sim' ELSE 'Não' END as status")
                     ->addSelect('data_pagamento as data')
                     ->orderByDesc('data_pagamento')->get();

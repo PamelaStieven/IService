@@ -49,7 +49,7 @@
         <div class="col-sm-6 col-lg-3">
             <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                 <span class="text-muted small fw-bold text-uppercase">Faturamento Bruto</span>
-                <h2 class="fw-bold text-info my-1">R$ {{ number_format($kpi['total_faturamento'], 2, ',', '.') }}</h2>
+                <h2 class="fw-bold text-primary my-1">R$ {{ number_format($kpi['total_faturamento'], 2, ',', '.') }}</h2>
                 <span class="text-muted small">Taxa retida: R$ {{ number_format($kpi['total_taxa_site'], 2, ',', '.') }}</span>
             </div>
         </div>
@@ -128,7 +128,7 @@
                 labels: ['Clientes / Usuários', 'Técnicos Credenciados', 'Administradores'],
                 datasets: [{
                     data: [{{ $totalUsuarios }}, {{ $totalTecnicos }}, {{ $totalAdmins }}],
-                    backgroundColor: ['#0047AB', '#0095D9', '#64748b'],
+                    backgroundColor: ['#0077B6', '#0095D9', '#64748b'],
                     borderWidth: 0,
                     hoverOffset: 4
                 }]
@@ -155,7 +155,7 @@
                 datasets: [{
                     label: 'Quantidade de Chamados',
                     data: {!! json_encode($statusData) !!},
-                    backgroundColor: ['#10b981', '#0047AB', '#f59e0b', '#ef4444'],
+                    backgroundColor: ['#10b981', '#0077B6', '#f59e0b', '#ef4444'],
                     borderRadius: 8,
                 }]
             },
@@ -189,7 +189,7 @@
                 datasets: [{
                     label: 'Serviços Cadastrados',
                     data: Object.values(categoriasData).length ? Object.values(categoriasData) : [0],
-                    backgroundColor: '#0047AB',
+                    backgroundColor: '#0077B6',
                     borderRadius: 6
                 }]
             },
@@ -230,7 +230,7 @@
                 labels: ['PIX', 'Boleto Bancário'],
                 datasets: [{
                     data: [{{ $pixQtd }}, {{ $boletoQtd }}],
-                    backgroundColor: ['#0095D9', '#0047AB'],
+                    backgroundColor: ['#0095D9', '#0077B6'],
                     borderWidth: 0
                 }]
             },

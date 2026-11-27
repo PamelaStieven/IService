@@ -17,6 +17,34 @@
     </style>
 </head>
 <body class="text-gray-800 antialiased" x-data="formMasks()">
+    @php
+        $habilidadesExistentes = $dado->exists ? $dado->habilidades : collect();
+        $habilidadesAntigas = old('habilidades');
+
+        if (is_array($habilidadesAntigas)) {
+            $habilidadesForm = collect($habilidadesAntigas)->map(function ($habilidade) use ($habilidadesExistentes) {
+                $registro = $habilidadesExistentes->firstWhere('HabilidadeID', (int) ($habilidade['id'] ?? 0));
+
+                return [
+                    'id' => $habilidade['id'] ?? '',
+                    'descricao' => $habilidade['descricao'] ?? '',
+                    'has_curso' => $registro && !empty($registro->cursos),
+                ];
+            })->values()->all();
+        } else {
+            $habilidadesForm = $habilidadesExistentes->map(function ($habilidade) {
+                return [
+                    'id' => $habilidade->HabilidadeID,
+                    'descricao' => $habilidade->descricao,
+                    'has_curso' => !empty($habilidade->cursos),
+                ];
+            })->values()->all();
+        }
+
+        if (empty($habilidadesForm)) {
+            $habilidadesForm = [['id' => '', 'descricao' => '', 'has_curso' => false]];
+        }
+    @endphp
 
     <header class="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-sm">
         <div class="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -31,14 +59,15 @@
     <main class="max-w-3xl mx-auto px-4 py-8">
         <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100">
 
-            <div class="mb-6">
-                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-diamante-suave text-cobalto mb-2">
-                    {{ $dado->exists ? 'Atualização de Cadastro' : 'Novo Cadastro' }}
+            <div class="mb-7 overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-5 sm:p-6">
+                <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-bold text-cobalto shadow-sm ring-1 ring-blue-100">
+                    <span class="h-2 w-2 rounded-full bg-[#0047AB]"></span>
+                    {{ $dado->exists ? 'Atualização de cadastro' : 'Cadastro profissional' }}
                 </span>
-                <h1 class="text-2xl font-bold text-gray-900">
+                <h1 class="mt-3 text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">
                     {{ $dado->exists ? 'Editar dados de ' . ($dado->usuario->nome_razao ?? 'Técnico') : 'Cadastrar novo técnico' }}
                 </h1>
-                <p class="text-sm text-gray-500 mt-1">Preencha os dados abaixo com atenção.</p>
+                <p class="mt-2 max-w-xl text-sm leading-6 text-gray-500">Mantenha os dados de contato, especialidades e recebimento organizados em um só lugar.</p>
             </div>
 
             @if ($errors->any())
@@ -134,13 +163,7 @@
                     <p class="mt-1 text-xs text-gray-500">JPG, PNG ou WEBP; até 5 MB.</p>
                 </div>
 
-                <div>
-                    <label for="habilidades" class="block text-sm font-semibold text-gray-700 mb-1.5">Habilidades *</label>
-                    <textarea id="habilidades" name="habilidades" rows="4" required
-                              placeholder="Uma habilidade por linha"
-                              class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">{{ old('habilidades', $dado->exists ? $dado->habilidades->pluck('descricao')->implode("\n") : '') }}</textarea>
-                    <p class="mt-1 text-xs text-gray-500">Informe cada habilidade em uma linha.</p>
-                </div>
+                @include('components.tecnicos.habilidades', ['habilidadesForm' => $habilidadesForm])
 
                 <section class="rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:p-5 space-y-4">
                     <div>

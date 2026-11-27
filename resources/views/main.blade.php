@@ -12,8 +12,8 @@
 
     <style>
         :root {
-            --iservice-primary: #0047AB;
-            --iservice-primary-dark: #003580;
+            --iservice-primary: #0077B6;
+            --iservice-primary-dark: #005F91;
             --iservice-accent: #0095D9;
             --iservice-ink: #17243a;
             --iservice-muted: #64748b;
@@ -73,7 +73,7 @@
         }
 
         .card-header.bg-primary {
-            background: linear-gradient(115deg, #0047AB, #0960bf) !important;
+            background: linear-gradient(115deg, #0077B6, #0095D9) !important;
             color: #fff !important;
         }
 
@@ -126,7 +126,7 @@
 
         .btn-outline-primary {
             color: var(--iservice-primary);
-            border-color: rgba(0, 71, 171, .32);
+            border-color: rgba(0, 119, 182, .32);
         }
 
         .btn-outline-primary:hover {
@@ -158,8 +158,8 @@
 
         .form-control:focus,
         .form-select:focus {
-            border-color: rgba(0, 71, 171, .55);
-            box-shadow: 0 0 0 .22rem rgba(0, 71, 171, .11);
+            border-color: rgba(0, 119, 182, .55);
+            box-shadow: 0 0 0 .22rem rgba(0, 119, 182, .11);
         }
 
         .form-control::placeholder {

@@ -31,6 +31,20 @@
 
                 <dt class="col-sm-4 text-muted">Término</dt>
                 <dd class="col-sm-8">{{ \Carbon\Carbon::parse($agendamento->data_hora_fim)->format('d/m/Y H:i') }}</dd>
+
+                <dt class="col-sm-4 text-muted">Método de pagamento</dt>
+                <dd class="col-sm-8">{{ $agendamento->metodo_pagamento ?? 'A definir na conclusão' }}</dd>
+
+                @if($agendamento->pagamento)
+                    <dt class="col-sm-4 text-muted">Valor do serviço</dt>
+                    <dd class="col-sm-8">R$ {{ number_format($agendamento->pagamento->valor_total, 2, ',', '.') }}</dd>
+
+                    <dt class="col-sm-4 text-muted">Comissão da empresa (10%)</dt>
+                    <dd class="col-sm-8">R$ {{ number_format($agendamento->pagamento->comissao_empresa ?? $agendamento->pagamento->taxa_site, 2, ',', '.') }}</dd>
+
+                    <dt class="col-sm-4 text-muted">Situação do pagamento</dt>
+                    <dd class="col-sm-8">{{ $agendamento->pagamento->status_pagamento ? 'Pago' : 'Pendente' }}</dd>
+                @endif
             </dl>
 
             <div class="d-flex flex-wrap justify-content-end gap-2">

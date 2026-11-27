@@ -36,7 +36,7 @@
                     <td>{{ $item->LocEquipID ?? 'Não informado' }}</td>
                     <td>{{ $item->metodo }}</td>
                     <td>R$ {{ number_format($item->valor_total, 2, ',', '.') }}</td>
-                    <td>R$ {{ number_format($item->taxa_site, 1, ',', '.') }}</td>
+                    <td>R$ {{ number_format($item->comissao_empresa ?? $item->taxa_site, 2, ',', '.') }}</td>
                     <td>{{ $item->status_pagamento ? 'Pago' : 'Pendente' }}</td>
                     <td>{{ $item->data_pagamento }}</td>
 
@@ -46,17 +46,21 @@
                             Editar
                         </a>
 
-                        <form action="{{ route('pagamentos.destroy', $item->PagamentoID) }}"
-                              method="POST"
-                              style="display:inline;">
-                            @csrf
-                            @method('DELETE')
+                        @if(!$item->AgendamentoID)
+                            <form action="{{ route('pagamentos.destroy', $item->PagamentoID) }}"
+                                  method="POST"
+                                  style="display:inline;">
+                                @csrf
+                                @method('DELETE')
 
-                            <button type="submit" class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Deseja excluir este pagamento?')">
-                                Excluir
-                            </button>
-                        </form>
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Deseja excluir este pagamento?')">
+                                    Excluir
+                                </button>
+                            </form>
+                        @else
+                            <span class="small text-muted">Registro de serviço protegido</span>
+                        @endif
                     </td>
                 </tr>
             @empty

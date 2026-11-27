@@ -34,7 +34,7 @@
     .iservice-logo-box {
         width: 38px;
         height: 38px;
-        background-color: #0047AB;
+        background-color: #0077B6;
         color: #ffffff;
         border-radius: 10px;
         display: flex;
@@ -42,7 +42,7 @@
         justify-content: center;
         font-weight: 700;
         font-size: 1.1rem;
-        box-shadow: 0 2px 4px rgba(0, 71, 171, 0.25);
+        box-shadow: 0 2px 4px rgba(0, 119, 182, 0.2);
     }
     .iservice-brand-text {
         font-weight: 700;
@@ -78,11 +78,11 @@
         cursor: pointer;
     }
     .iservice-nav-link:hover {
-        color: #0047AB !important;
+        color: #0077B6 !important;
         background-color: #f1f5f9;
     }
     .iservice-nav-link.active {
-        color: #0047AB !important;
+        color: #0077B6 !important;
         background-color: #E6F7FF;
         font-weight: 600;
     }
@@ -124,7 +124,7 @@
     }
     .iservice-mobile-link:hover, .iservice-mobile-link.active {
         background-color: #E6F7FF;
-        color: #0047AB !important;
+        color: #0077B6 !important;
         font-weight: 600;
     }
 
@@ -158,7 +158,7 @@
         padding: .45rem .9rem;
         border-radius: 999px;
         background: #eaf5fb;
-        color: #0047AB !important;
+        color: #0077B6 !important;
         font-size: .79rem;
         font-weight: 700;
         text-decoration: none !important;
@@ -174,12 +174,12 @@
 
     .iservice-login-link {
         padding: .5rem 1.05rem;
-        background: #0047AB;
+        background: #0077B6;
         color: #fff !important;
     }
 
     .iservice-login-link:hover {
-        background: #003580;
+        background: #005F91;
     }
 
     .iservice-account-info {

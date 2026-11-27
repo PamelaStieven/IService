@@ -76,6 +76,7 @@
                         <div><strong>Técnico:</strong> {{ optional(optional($item->tecnico)->usuario)->nome_razao ?? 'Não informado' }}</div>
                         <div><strong>Início:</strong> {{ $item->data_hora_inicio }}</div>
                         <div><strong>Fim:</strong> {{ $item->data_hora_fim }}</div>
+                        <div><strong>Pagamento:</strong> {{ $item->metodo_pagamento ?? 'A definir na conclusão' }}</div>
                     </div>
 
                     <hr class="my-3" style="border-color: #f1f5f9; opacity: 1;">
@@ -88,16 +89,20 @@
                             Editar
                         </a>
 
-                        <form action="{{ route('agendamentos.destroy', $item->AgendamentoID) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                    class="btn btn-sm rounded-pill px-3 py-1 fw-semibold border-0"
-                                    style="background-color: #fee2e2; color: #dc2626;"
-                                    onclick="return confirm('Deseja realmente excluir este agendamento?')">
-                                Excluir
-                            </button>
-                        </form>
+                        @if($item->status_servico === 'Concluido')
+                            <span class="small text-muted">Registro concluído e bloqueado</span>
+                        @else
+                            <form action="{{ route('agendamentos.destroy', $item->AgendamentoID) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                        class="btn btn-sm rounded-pill px-3 py-1 fw-semibold border-0"
+                                        style="background-color: #fee2e2; color: #dc2626;"
+                                        onclick="return confirm('Deseja realmente excluir este agendamento?')">
+                                    Excluir
+                                </button>
+                            </form>
+                        @endif
                     </div>
 
                 </div>

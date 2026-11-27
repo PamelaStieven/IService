@@ -21,6 +21,7 @@ class Pagamento extends Model
         'metodo',
         'valor_total',
         'taxa_site',
+        'comissao_empresa',
         'status_pagamento',
         'data_pagamento',
     ];
@@ -28,6 +29,7 @@ class Pagamento extends Model
     protected $casts = [
         'valor_total'    => 'decimal:2',
         'taxa_site'      => 'decimal:1',
+        'comissao_empresa' => 'decimal:2',
         'data_pagamento' => 'datetime',
     ];
 

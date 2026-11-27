@@ -19,6 +19,22 @@
     </style>
 </head>
 <body class="text-slate-800 antialiased" x-data="registerTecnicoForm()">
+    @php
+        $habilidadesAntigas = old('habilidades');
+        $habilidadesForm = is_array($habilidadesAntigas)
+            ? collect($habilidadesAntigas)->map(function ($habilidade) {
+                return [
+                    'id' => '',
+                    'descricao' => $habilidade['descricao'] ?? '',
+                    'has_curso' => false,
+                ];
+            })->values()->all()
+            : [['id' => '', 'descricao' => '', 'has_curso' => false]];
+
+        if (empty($habilidadesForm)) {
+            $habilidadesForm = [['id' => '', 'descricao' => '', 'has_curso' => false]];
+        }
+    @endphp
 
     <!-- Header Simples -->
     <header class="bg-white border-b border-slate-100 py-4 px-6">
@@ -164,13 +180,7 @@
                     <p class="mt-1 text-xs text-slate-500">Opcional; JPG, PNG ou WEBP, até 5 MB.</p>
                 </div>
 
-                <div>
-                    <label for="habilidades" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Habilidades *</label>
-                    <textarea id="habilidades" name="habilidades" rows="4" required
-                              placeholder="Informe uma habilidade por linha"
-                              class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">{{ old('habilidades') }}</textarea>
-                    <p class="mt-1 text-xs text-slate-500">Ex.: elétrica residencial, hidráulica, instalação.</p>
-                </div>
+                @include('components.tecnicos.habilidades', ['habilidadesForm' => $habilidadesForm])
 
                 <section class="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5 space-y-4">
                     <div>

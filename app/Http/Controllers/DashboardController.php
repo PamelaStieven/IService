@@ -11,6 +11,7 @@ use App\Models\LocacaoEquip;
 use App\Models\Habilidade;
 use App\Models\DadosBancarios;
 use App\Models\Enderecos;
+use App\Services\CalculadoraFinanceiraServico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -98,7 +99,7 @@ class DashboardController extends Controller
     /**
      * Tela de Gráficos e Métricas (Trabalhos Realizados e Técnicos X Usuários).
      */
-    public function graficos()
+    public function graficos(CalculadoraFinanceiraServico $calculadora)
     {
         // 1. Quantia de Técnicos X Usuários X Administradores
         $totalTecnicos = Usuario::where('tipo', 'Técnico')->count();
@@ -130,13 +131,36 @@ class DashboardController extends Controller
 
         $pagamentosConfirmados = Pagamento::where('status_pagamento', true);
         $faturamentoConfirmado = (clone $pagamentosConfirmados)->sum('valor_total');
-        $taxaConfirmada = (clone $pagamentosConfirmados)->sum('taxa_site');
+        $taxaConfirmada = (clone $pagamentosConfirmados)
+            ->selectRaw('COALESCE(SUM(COALESCE(comissao_empresa, taxa_site)), 0) as total')
+            ->value('total');
         $faturamentoMes = (clone $pagamentosConfirmados)
             ->whereMonth('data_pagamento', now()->month)
             ->whereYear('data_pagamento', now()->year)
             ->sum('valor_total');
+        $comissaoServicosTotalCentavos = 0;
+        $comissaoServicosRecebidaCentavos = 0;
+        $comissaoServicosPendenteCentavos = 0;
+        $agendamentosConcluidos = Agendamento::with(['servico', 'pagamento'])
+            ->where('status_servico', 'Concluido')
+            ->get();
+        foreach ($agendamentosConcluidos as $agendamento) {
+            $comissao = $agendamento->pagamento
+                ? (float) ($agendamento->pagamento->comissao_empresa ?? $agendamento->pagamento->taxa_site)
+                : (float) $calculadora->calcular($agendamento)['comissao_empresa'];
+            $comissaoCentavos = (int) round($comissao * 100);
+
+            $comissaoServicosTotalCentavos += $comissaoCentavos;
+            if ($agendamento->pagamento && $agendamento->pagamento->status_pagamento) {
+                $comissaoServicosRecebidaCentavos += $comissaoCentavos;
+            } else {
+                $comissaoServicosPendenteCentavos += $comissaoCentavos;
+            }
+        }
+        $comissaoServicosTotal = $comissaoServicosTotalCentavos / 100;
+        $comissaoServicosRecebida = $comissaoServicosRecebidaCentavos / 100;
+        $comissaoServicosPendente = $comissaoServicosPendenteCentavos / 100;
         $pagamentosRecentes = Pagamento::with(['agendamento.usuario', 'locacaoEquip.usuario'])
-            ->where('status_pagamento', true)
             ->orderByDesc('data_pagamento')
             ->limit(8)
             ->get();
@@ -151,6 +175,9 @@ class DashboardController extends Controller
             'total_taxa_site'    => $taxaConfirmada,
             'total_repasses'     => $faturamentoConfirmado - $taxaConfirmada,
             'faturamento_mes'    => $faturamentoMes,
+            'comissao_servicos_total' => $comissaoServicosTotal,
+            'comissao_servicos_recebida' => $comissaoServicosRecebida,
+            'comissao_servicos_pendente' => $comissaoServicosPendente,
         ];
 
         return view('dashboard.graficos', compact(
@@ -194,7 +221,9 @@ class DashboardController extends Controller
 
         // Totais Consolidados
         $faturamentoTotal = $pagamentos->sum('valor_total');
-        $taxaSiteTotal    = $pagamentos->sum('taxa_site');
+        $taxaSiteTotal    = $pagamentos->sum(function ($pagamento) {
+            return $pagamento->comissao_empresa ?? $pagamento->taxa_site;
+        });
         $repassesTecnico  = $faturamentoTotal - $taxaSiteTotal;
 
         return view('dashboard.relatorios', compact(

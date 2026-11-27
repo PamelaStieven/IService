@@ -7,6 +7,8 @@ use App\Models\Servico;
 use App\Models\Tecnicos;
 use App\Models\Equipamentos;
 use App\Models\Enderecos;
+use App\Models\Habilidade;
+use App\Models\Pagamento;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -78,6 +80,10 @@ class ExampleTest extends TestCase
         ] as $route) {
             $this->get(route($route))->assertOk();
         }
+        $this->get(route('agendamentos.create'))
+            ->assertSee('Novo Agendamento')
+            ->assertSee('id="dialog-metodo-pagamento"', false)
+            ->assertDontSee('1970-01-01');
         $cliente = Usuario::create([
             'nome_razao' => 'Cliente do painel',
             'email' => 'painel@example.test',
@@ -150,6 +156,9 @@ class ExampleTest extends TestCase
     public function test_public_technician_signup_creates_bank_details()
     {
         Storage::fake('public');
+        $comprovanteHabilidade = UploadedFile::fake()
+            ->createWithContent('curso-eletrica.pdf', 'Conteúdo do comprovante público.')
+            ->mimeType('application/pdf');
 
         $this->post(route('register.tecnico.submit'), [
             'nome_razao' => 'Técnico novo',
@@ -160,7 +169,10 @@ class ExampleTest extends TestCase
             'telefone' => '(11)99999-9998',
             'data_nascimento' => '1990-01-01',
             'foto' => UploadedFile::fake()->image('tecnico.png'),
-            'habilidades' => "Elétrica\nHidráulica",
+            'habilidades' => [
+                ['descricao' => 'Elétrica', 'cursos' => $comprovanteHabilidade],
+                ['descricao' => 'Hidráulica'],
+            ],
             'banco' => 'Banco de Teste',
             'agencia' => '1234',
             'numero_conta' => '123456-7',
@@ -180,6 +192,8 @@ class ExampleTest extends TestCase
             'TecnicoID' => $tecnico->TecnicoID,
             'descricao' => 'Hidráulica',
         ]);
+        $this->assertNotEmpty(Habilidade::where('TecnicoID', $tecnico->TecnicoID)
+            ->where('descricao', 'Elétrica')->firstOrFail()->cursos);
         $this->get(route('tecnicos.certificado', $tecnico->TecnicoID))->assertOk();
         $this->assertDatabaseHas('dados_bancarios', [
             'TecnicoID' => $tecnico->TecnicoID,
@@ -206,6 +220,9 @@ class ExampleTest extends TestCase
     public function test_admin_technician_form_saves_bank_details_and_certificate()
     {
         Storage::fake('public');
+        $comprovanteHabilidade = UploadedFile::fake()
+            ->createWithContent('curso-eletrica.pdf', 'Conteúdo do comprovante administrativo.')
+            ->mimeType('application/pdf');
 
         $this->post(route('tecnicos.store'), [
             'nome_razao' => 'Técnico administrativo',
@@ -215,7 +232,10 @@ class ExampleTest extends TestCase
             'data_nascimento' => '1990-01-01',
             'password' => 'senha123',
             'password_confirmation' => 'senha123',
-            'habilidades' => "Elétrica\nHidráulica",
+            'habilidades' => [
+                ['descricao' => 'Elétrica', 'cursos' => $comprovanteHabilidade],
+                ['descricao' => 'Hidráulica'],
+            ],
             'banco' => 'Banco Inicial',
             'agencia' => '1234',
             'numero_conta' => '123456-7',
@@ -239,6 +259,10 @@ class ExampleTest extends TestCase
             'TecnicoID' => $tecnico->TecnicoID,
             'descricao' => 'Elétrica',
         ]);
+        $habilidadeEletrica = Habilidade::where('TecnicoID', $tecnico->TecnicoID)
+            ->where('descricao', 'Elétrica')->firstOrFail();
+        $comprovanteAnteriorHabilidade = $habilidadeEletrica->cursos;
+        $this->assertNotEmpty($comprovanteAnteriorHabilidade);
         $this->get(route('tecnicos.certificado', $tecnico->TecnicoID))
             ->assertOk()
             ->assertHeader('Content-Type', 'application/pdf');
@@ -251,7 +275,10 @@ class ExampleTest extends TestCase
             'cpf_cnpj' => $usuario->cpf_cnpj,
             'telefone' => $usuario->telefone,
             'data_nascimento' => '1990-01-01',
-            'habilidades' => "Elétrica\nMecânica",
+            'habilidades' => [
+                ['id' => $habilidadeEletrica->HabilidadeID, 'descricao' => 'Elétrica residencial'],
+                ['descricao' => 'Mecânica'],
+            ],
             'banco' => 'Banco Atualizado',
             'agencia' => '4321',
             'numero_conta' => '765432-1',
@@ -268,6 +295,15 @@ class ExampleTest extends TestCase
             'TecnicoID' => $tecnico->TecnicoID,
             'banco' => 'Banco Atualizado',
             'tipo_conta' => 2,
+        ]);
+        $this->assertSame(
+            $comprovanteAnteriorHabilidade,
+            Habilidade::where('TecnicoID', $tecnico->TecnicoID)
+                ->where('descricao', 'Elétrica residencial')->firstOrFail()->cursos
+        );
+        $this->assertDatabaseMissing('habilidade', [
+            'TecnicoID' => $tecnico->TecnicoID,
+            'descricao' => 'Hidráulica',
         ]);
     }
 
@@ -543,31 +579,80 @@ class ExampleTest extends TestCase
             'titulo' => 'Reparo de teste',
             'categoria' => 'Eletrônica',
             'descricao' => 'Atendimento de teste',
-            'preco_base' => 120,
+            'preco_base' => 123.45,
             'tipo_preco' => 'Hora',
         ])->assertRedirect(route('servicos.index'));
 
         $servico = Servico::firstOrFail();
-        $this->post(route('agendamentos.store'), [
+        $dadosAgendamento = [
             'UserID' => $cliente->UserID,
             'TecnicoID' => $tecnico->TecnicoID,
             'ServicoID' => $servico->ServicoID,
             'data_hora_inicio' => '2026-12-01 10:00:00',
             'data_hora_fim' => '2026-12-01 11:00:00',
             'status_servico' => 'Concluido',
-        ])->assertRedirect(route('agendamentos.index'));
+        ];
+        $this->post(route('agendamentos.store'), $dadosAgendamento)
+            ->assertSessionHasErrors('metodo_pagamento');
+        $this->assertDatabaseCount('agendamento', 0);
+
+        $dadosAgendamento['metodo_pagamento'] = 'PIX';
+        $this->post(route('agendamentos.store'), $dadosAgendamento)
+            ->assertRedirect(route('agendamentos.index'));
 
         $agendamento = \App\Models\Agendamento::firstOrFail();
         $this->get(route('agendamentos.show', $agendamento->AgendamentoID))
             ->assertOk()
-            ->assertSee('Detalhes do agendamento');
+            ->assertSee('Detalhes do agendamento')
+            ->assertSee('PIX');
 
         $this->assertDatabaseHas('agendamento', [
             'UserID' => $cliente->UserID,
             'TecnicoID' => $tecnico->TecnicoID,
             'ServicoID' => $servico->ServicoID,
             'status_servico' => 'Concluido',
+            'metodo_pagamento' => 'PIX',
         ]);
+        $pagamento = Pagamento::where('AgendamentoID', $agendamento->AgendamentoID)->firstOrFail();
+        $this->assertSame('123.45', $pagamento->valor_total);
+        $this->assertSame('12.35', $pagamento->comissao_empresa);
+        $this->assertFalse((bool) $pagamento->status_pagamento);
+        $this->get(route('dashboard.graficos'))
+            ->assertOk()
+            ->assertSee('Comissão da empresa nos serviços concluídos (10%)')
+            ->assertSee('12,35')
+            ->assertSee('Pendente');
+
+        $this->put(route('agendamentos.update', $agendamento->AgendamentoID), array_merge(
+            $dadosAgendamento,
+            ['status_servico' => 'Aceito']
+        ))->assertSessionHasErrors('status_servico');
+        $this->assertDatabaseHas('agendamento', [
+            'AgendamentoID' => $agendamento->AgendamentoID,
+            'status_servico' => 'Concluido',
+        ]);
+        $this->assertSame(1, Pagamento::where('AgendamentoID', $agendamento->AgendamentoID)->count());
+
+        $this->put(route('pagamentos.update', $pagamento->PagamentoID), [
+            'AgendamentoID' => $agendamento->AgendamentoID,
+            'metodo' => 'Boleto',
+            'valor_total' => '999.99',
+            'taxa_site' => '999.99',
+            'status_pagamento' => '1',
+            'data_pagamento' => '2026-12-01 11:00:00',
+        ])->assertRedirect(route('pagamentos.index'));
+
+        $pagamento->refresh();
+        $this->assertSame('123.45', $pagamento->valor_total);
+        $this->assertSame('12.35', $pagamento->comissao_empresa);
+        $this->assertTrue((bool) $pagamento->status_pagamento);
+        $this->assertDatabaseHas('agendamento', [
+            'AgendamentoID' => $agendamento->AgendamentoID,
+            'metodo_pagamento' => 'Boleto',
+        ]);
+        $this->get(route('dashboard.graficos'))
+            ->assertSee('Comissão recebida')
+            ->assertSee('Boleto');
         $this->get(route('agendamentos.index'))->assertOk();
     }
 
@@ -683,7 +768,7 @@ class ExampleTest extends TestCase
             'cpf_cnpj' => '12345678916',
             'telefone' => '11999999916',
             'data_nascimento' => '1990-01-01',
-            'habilidades' => 'Elétrica',
+            'habilidades' => [['descricao' => 'Elétrica']],
             'banco' => 'Banco de Teste',
             'agencia' => '1234',
             'numero_conta' => '123456-7',

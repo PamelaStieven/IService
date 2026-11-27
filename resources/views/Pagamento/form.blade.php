@@ -2,6 +2,7 @@
 @extends('main')
 
 @php($isEdit = isset($dado) && $dado->exists)
+@php($isServicePayment = $isEdit && $dado->AgendamentoID !== null)
 
 @section('titulo', $isEdit ? 'Editar Pagamento' : 'Cadastrar Pagamento')
 
@@ -19,20 +20,16 @@
             @method('PUT')
         @endif
 
-        <div class="mb-3">
-            <label for="AgendamentoID" class="form-label">Agendamento</label>
-
-            <select name="AgendamentoID" id="AgendamentoID" class="form-control">
-                <option value="">Selecione um agendamento</option>
-
-                @foreach($agendamentos as $agendamento)
-                    <option value="{{ $agendamento->AgendamentoID }}"
-                        {{ old('AgendamentoID', $dado->AgendamentoID ?? '') == $agendamento->AgendamentoID ? 'selected' : '' }}>
-                        Agendamento #{{ $agendamento->AgendamentoID }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+        @if($isServicePayment)
+            <input type="hidden" name="AgendamentoID" value="{{ $dado->AgendamentoID }}">
+            <div class="alert alert-info rounded-3">
+                Pagamento do agendamento #{{ $dado->AgendamentoID }}. O valor e a comissão de 10% são calculados pelo serviço.
+            </div>
+        @else
+            <div class="alert alert-light border rounded-3">
+                Pagamentos de serviços são registrados automaticamente quando o agendamento é concluído.
+            </div>
+        @endif
 
         <div class="mb-3">
             <label for="LocEquipID" class="form-label">Locação de Equipamento</label>
@@ -69,15 +66,17 @@
 
             <input type="number" name="valor_total" id="valor_total"
                    class="form-control" step="0.01" min="0"
-                   value="{{ old('valor_total', $dado->valor_total ?? '') }}" required>
+                   value="{{ old('valor_total', $dado->valor_total ?? '') }}" required
+                   {{ $isServicePayment ? 'readonly' : '' }}>
         </div>
 
         <div class="mb-3">
             <label for="taxa_site" class="form-label">Taxa do Site</label>
 
             <input type="number" name="taxa_site" id="taxa_site"
-                   class="form-control" step="0.1" min="0"
-                   value="{{ old('taxa_site', $dado->taxa_site ?? '') }}" required>
+                   class="form-control" step="0.01" min="0"
+                   value="{{ old('taxa_site', $dado->comissao_empresa ?? $dado->taxa_site ?? '') }}" required
+                   {{ $isServicePayment ? 'readonly' : '' }}>
         </div>
 
         <div class="mb-3">

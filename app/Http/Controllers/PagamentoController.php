@@ -6,6 +6,8 @@ use App\Models\Pagamento;
 use App\Models\Agendamento;
 use App\Models\LocacaoEquip;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class PagamentoController extends Controller
 {
@@ -44,9 +46,9 @@ class PagamentoController extends Controller
         return view('Pagamento.form', compact('dado', 'agendamentos', 'locacoes'));
     }
 
-    private function validateForm(Request $request)
+    private function validateForm(Request $request): array
     {
-        $request->validate([
+        return $request->validate([
             'AgendamentoID'    => 'nullable|exists:agendamento,AgendamentoID',
             'LocEquipID'       => 'nullable|exists:locacao_equips,LocEquipID',
             'metodo'           => 'required|in:PIX,Boleto',
@@ -65,9 +67,14 @@ class PagamentoController extends Controller
 
     public function store(Request $request)
     {
-        $this->validateForm($request);
+        $dados = $this->validateForm($request);
+        if (!empty($dados['AgendamentoID'])) {
+            throw ValidationException::withMessages([
+                'AgendamentoID' => 'O pagamento do serviço é gerado automaticamente ao concluí-lo.',
+            ]);
+        }
 
-        Pagamento::create($request->all());
+        Pagamento::create($dados);
 
         return redirect()->route('pagamentos.index')->with('success', 'Pagamento registrado com sucesso!');
     }
@@ -82,17 +89,43 @@ class PagamentoController extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->validateForm($request);
-
         $pagamento = Pagamento::findOrFail($id);
-        $pagamento->update($request->all());
+        $dados = $this->validateForm($request);
+
+        if ((string) ($dados['AgendamentoID'] ?? '') !== (string) ($pagamento->AgendamentoID ?? '')
+            || (string) ($dados['LocEquipID'] ?? '') !== (string) ($pagamento->LocEquipID ?? '')) {
+            throw ValidationException::withMessages([
+                'AgendamentoID' => 'A origem de um pagamento não pode ser alterada após o registro.',
+            ]);
+        }
+
+        if ($pagamento->AgendamentoID) {
+            $agendamento = Agendamento::with('servico')->findOrFail($pagamento->AgendamentoID);
+            $dados['valor_total'] = $pagamento->valor_total;
+            $dados['taxa_site'] = $pagamento->taxa_site;
+            $dados['comissao_empresa'] = $pagamento->comissao_empresa;
+
+            DB::transaction(function () use ($pagamento, $agendamento, $dados) {
+                $pagamento->update($dados);
+                $agendamento->update(['metodo_pagamento' => $dados['metodo']]);
+            });
+        } else {
+            $pagamento->update($dados);
+        }
 
         return redirect()->route('pagamentos.index')->with('success', 'Pagamento atualizado com sucesso!');
     }   
 
     public function destroy($id)
     {
-        Pagamento::destroy($id);
+        $pagamento = Pagamento::findOrFail($id);
+        if ($pagamento->AgendamentoID) {
+            throw ValidationException::withMessages([
+                'pagamento' => 'O registro financeiro de um serviço concluído não pode ser excluído.',
+            ]);
+        }
+
+        $pagamento->delete();
 
         return redirect()->route('pagamentos.index')->with('success', 'Pagamento removido com sucesso!');
     }
