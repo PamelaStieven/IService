@@ -1,4 +1,9 @@
 <style>
+    html,
+    body {
+        overflow-x: clip;
+    }
+
     /* IService Navbar Styles - Funciona perfeitamente com Tailwind ou Bootstrap */
     .iservice-navbar {
         background-color: #ffffff;
@@ -81,62 +86,28 @@
         background-color: #E6F7FF;
         font-weight: 600;
     }
-    /* Dropdown */
-    .iservice-dropdown-menu {
-        display: none;
-        position: absolute;
-        top: calc(100% + 0.4rem);
-        right: 0;
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 1rem;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-        padding: 0.5rem;
-        min-width: 190px;
-        z-index: 1050;
-    }
-    .iservice-dropdown-menu.show {
-        display: block;
-    }
-    .iservice-dropdown-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.6rem 0.85rem;
-        font-size: 0.875rem;
-        color: #334155 !important;
-        text-decoration: none !important;
-        border-radius: 0.65rem;
-        transition: background-color 0.15s;
-    }
-    .iservice-dropdown-item:hover {
-        background-color: #f8fafc;
-        color: #0047AB !important;
-    }
-    .iservice-dropdown-item.active {
-        background-color: #E6F7FF;
-        color: #0047AB !important;
-        font-weight: 600;
-    }
     /* Mobile Toggle */
     .iservice-nav-toggle {
         display: none;
-        background: none;
-        border: none;
-        padding: 0.5rem;
-        color: #334155;
+        background: #f3f7fc;
+        border: 1px solid #e3eaf3;
+        padding: 0.55rem;
+        color: #34445c;
         cursor: pointer;
-        border-radius: 0.5rem;
+        border-radius: 0.75rem;
+        line-height: 0;
+        transition: background .16s ease, border-color .16s ease;
     }
     .iservice-nav-toggle:hover {
-        background-color: #f1f5f9;
+        background-color: #eaf3fb;
+        border-color: #cbd9e9;
     }
     /* Mobile Menu */
     .iservice-mobile-menu {
         display: none;
         background: #ffffff;
-        border-top: 1px solid #f1f5f9;
-        padding: 0.75rem 1.25rem 1.25rem;
+        border-top: 1px solid #edf1f6;
+        padding: 0.8rem max(1.25rem, calc((100% - 1200px) / 2)) 1.25rem;
     }
     .iservice-mobile-menu.show {
         display: block;
@@ -157,12 +128,156 @@
         font-weight: 600;
     }
 
-    @media (max-width: 991px) {
+    .iservice-nav-actions {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        flex-shrink: 0;
+    }
+
+    .iservice-account {
+        display: flex;
+        align-items: center;
+        gap: .65rem;
+        border-left: 1px solid #e5ebf2;
+        padding-left: .85rem;
+    }
+
+    @media (max-width: 767.98px) {
+        .iservice-desktop-account {
+            display: none;
+        }
+    }
+
+    .iservice-account-link,
+    .iservice-login-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 36px;
+        padding: .45rem .9rem;
+        border-radius: 999px;
+        background: #eaf5fb;
+        color: #0047AB !important;
+        font-size: .79rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        white-space: nowrap;
+        transition: background .16s ease, transform .16s ease;
+    }
+
+    .iservice-account-link:hover,
+    .iservice-login-link:hover {
+        background: #dceef8;
+        transform: translateY(-1px);
+    }
+
+    .iservice-login-link {
+        padding: .5rem 1.05rem;
+        background: #0047AB;
+        color: #fff !important;
+    }
+
+    .iservice-login-link:hover {
+        background: #003580;
+    }
+
+    .iservice-account-info {
+        text-align: right;
+        line-height: 1.2;
+    }
+
+    .iservice-user-name {
+        display: block;
+        max-width: 150px;
+        overflow: hidden;
+        color: #1e293b;
+        font-size: .82rem;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .iservice-user-role {
+        color: #64748b;
+        font-size: .66rem;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+    }
+
+    .iservice-logout {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        min-height: 36px;
+        padding: .4rem .8rem;
+        border: 1px solid #f0d7d6;
+        border-radius: 999px;
+        background: #fff7f6;
+        color: #b54747;
+        cursor: pointer;
+        font-size: .78rem;
+        font-weight: 700;
+        transition: background .16s ease;
+    }
+
+    .iservice-logout:hover {
+        background: #ffedeb;
+    }
+
+    .iservice-mobile-account {
+        margin-top: .75rem;
+        padding-top: .85rem;
+        border-top: 1px solid #edf1f6;
+    }
+
+    .iservice-mobile-actions {
+        display: flex;
+        gap: .5rem;
+        padding: .4rem .75rem 0;
+    }
+
+    .iservice-mobile-actions a,
+    .iservice-mobile-actions button {
+        flex: 1;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .iservice-mobile-actions form {
+        flex: 1;
+    }
+
+    .iservice-mobile-actions button {
+        width: 100%;
+    }
+
+    @media (max-width: 1199px) {
         .iservice-nav-links {
             display: none;
         }
         .iservice-nav-toggle {
             display: block;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .iservice-nav-container {
+            height: 4rem;
+            padding: 0 1rem;
+        }
+        .iservice-brand-text {
+            font-size: 1.1rem;
+        }
+        .iservice-logo-box {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+        }
+        .iservice-mobile-menu {
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
     }
 </style>
@@ -213,76 +328,14 @@
             </li>
 
             <li class="iservice-nav-item">
-                <a href="{{ route('locacoes-equipamentos.index') }}" 
-                   class="iservice-nav-link {{ request()->is('locac*') ? 'active' : '' }}">
-                    Locações
+                <a href="{{ route('modulos.index') }}"
+                   class="iservice-nav-link {{ request()->is('modulos*') ? 'active' : '' }}">
+                    Módulos
                 </a>
-            </li>
-
-            <li class="iservice-nav-item">
-                <a href="{{ route('enderecos.index') }}" 
-                   class="iservice-nav-link {{ request()->is('endereco*') ? 'active' : '' }}">
-                    Endereços
-                </a>
-            </li>
-
-            <!-- Dropdown Mais -->
-            @php
-                $isMaisActive = request()->is('dashboard/graficos*') ||
-                                request()->is('relatorios*') ||
-                                request()->is('itens-servico*') || 
-                                request()->is('pagamento*') || 
-                                request()->is('dados-bancario*') || 
-                                request()->is('dadosbancarios*') || 
-                                request()->is('habilidade*');
-            @endphp
-            <li class="iservice-nav-item" id="iserviceDropdownContainer">
-                <button type="button" 
-                        class="iservice-nav-link {{ $isMaisActive ? 'active' : '' }}" 
-                        onclick="toggleIserviceDropdown(event)">
-                    <span>Mais</span>
-                    <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
-                <div class="iservice-dropdown-menu" id="iserviceDropdownMenu">
-                    <a href="{{ route('dashboard.graficos') }}" 
-                       class="iservice-dropdown-item {{ request()->is('dashboard/graficos*') ? 'active' : '' }}">
-                        Gráficos & Métricas
-                    </a>
-                    <a href="{{ route('relatorios.index') }}" 
-                       class="iservice-dropdown-item {{ request()->is('relatorios*') ? 'active' : '' }}">
-                        Relatório Financeiro
-                    </a>
-                    <div style="border-top: 1px solid #f1f5f9; margin: 0.35rem 0;"></div>
-                    <a href="{{ route('pagamentos.index') }}" 
-                       class="iservice-dropdown-item {{ request()->is('pagamento*') ? 'active' : '' }}">
-                        Pagamentos
-                    </a>
-                    <a href="{{ route('itens-servico.index') }}" 
-                       class="iservice-dropdown-item {{ request()->is('itens-servico*') ? 'active' : '' }}">
-                        Itens de Serviço
-                    </a>
-                    <a href="{{ route('dados-bancarios.index') }}" 
-                       class="iservice-dropdown-item {{ request()->is('dados-bancario*') || request()->is('dadosbancarios*') ? 'active' : '' }}">
-                        Dados Bancários
-                    </a>
-                    <a href="{{ route('habilidades.index') }}" 
-                       class="iservice-dropdown-item {{ request()->is('habilidade*') ? 'active' : '' }}">
-                        Habilidades
-                    </a>
-                </div>
             </li>
         </ul>
 
-        <!-- Botão Ação Topo Opcional, Usuário Logado e Toggle Mobile -->
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-            @hasSection('botao_topo')
-                <div class="d-none d-lg-block">
-                    @yield('botao_topo')
-                </div>
-            @endif
-
+        <div class="iservice-nav-actions">
             @if(Auth::check())
                 @php
                     $painelRoute = match(Auth::user()->tipo) {
@@ -291,39 +344,35 @@
                         default         => route('cliente.dashboard')
                     };
                 @endphp
-                <div class="d-none d-md-flex align-items-center" style="gap: 0.6rem; border-left: 1px solid #e2e8f0; padding-left: 0.85rem;">
-                    <a href="{{ $painelRoute }}" 
-                       style="background: #E6F7FF; color: #0047AB; border-radius: 9999px; padding: 0.35rem 0.85rem; font-size: 0.8rem; font-weight: 700; text-decoration: none;"
-                       title="Acessar meu painel">
+                <div class="iservice-account iservice-desktop-account">
+                    <a href="{{ $painelRoute }}" class="iservice-account-link" title="Acessar meu painel">
                         Meu Painel
                     </a>
-                    <div style="text-align: right; line-height: 1.2;">
-                        <span style="font-size: 0.85rem; font-weight: 700; color: #1e293b; display: block;">
+                    <div class="iservice-account-info">
+                        <span class="iservice-user-name">
                             {{ Auth::user()->nome_razao }}
                         </span>
-                        <span style="font-size: 0.7rem; font-weight: 600; color: #0047AB; text-transform: uppercase;">
+                        <span class="iservice-user-role">
                             {{ Auth::user()->tipo }}
                         </span>
                     </div>
 
-                    <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                    <form action="{{ route('logout') }}" method="POST" class="m-0">
                         @csrf
-                        <button type="submit" 
-                                style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 9999px; padding: 0.35rem 0.85rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;"
-                                title="Sair da Conta">
+                        <button type="submit" class="iservice-logout" title="Sair da conta">
                             <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                             <span>Sair</span>
                         </button>
                     </form>
                 </div>
             @else
-                <a href="{{ route('login') }}" 
-                   style="background: #0047AB; color: #ffffff; border-radius: 9999px; padding: 0.45rem 1.15rem; font-size: 0.85rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem;">
+                <a href="{{ route('login') }}" class="iservice-login-link">
                     Entrar
                 </a>
             @endif
 
-            <button type="button" class="iservice-nav-toggle" onclick="toggleIserviceMobileMenu()" aria-label="Abrir Menu">
+            <button type="button" class="iservice-nav-toggle" onclick="toggleIserviceMobileMenu(this)" aria-label="Abrir menu"
+                    aria-controls="iserviceMobileMenu" aria-expanded="false">
                 <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
@@ -338,68 +387,38 @@
         <a href="{{ route('equipamentos.index') }}" class="iservice-mobile-link {{ request()->is('equipamento*') ? 'active' : '' }}">Equipamentos</a>
         <a href="{{ route('servicos.index') }}" class="iservice-mobile-link {{ request()->is('servico*') ? 'active' : '' }}">Serviços</a>
         <a href="{{ route('agendamentos.index') }}" class="iservice-mobile-link {{ request()->is('agendamento*') ? 'active' : '' }}">Agendamentos</a>
-        <a href="{{ route('locacoes-equipamentos.index') }}" class="iservice-mobile-link {{ request()->is('locac*') ? 'active' : '' }}">Locações</a>
-        <a href="{{ route('enderecos.index') }}" class="iservice-mobile-link {{ request()->is('endereco*') ? 'active' : '' }}">Endereços</a>
-        <div style="border-top: 1px solid #f1f5f9; margin: 0.5rem 0; padding-top: 0.5rem;">
-            <span style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 700; padding: 0 0.75rem;">Análises & Gestão</span>
-            <a href="{{ route('dashboard.graficos') }}" class="iservice-mobile-link {{ request()->is('dashboard/graficos*') ? 'active' : '' }}">📊 Gráficos & Métricas</a>
-            <a href="{{ route('relatorios.index') }}" class="iservice-mobile-link {{ request()->is('relatorios*') ? 'active' : '' }}">📑 Relatório Financeiro</a>
-            <span style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 700; padding: 0 0.75rem; display: block; margin-top: 0.5rem;">Outros Módulos</span>
-            <a href="{{ route('itens-servico.index') }}" class="iservice-mobile-link {{ request()->is('itens-servico*') ? 'active' : '' }}">Itens de Serviço</a>
-            <a href="{{ route('pagamentos.index') }}" class="iservice-mobile-link {{ request()->is('pagamento*') ? 'active' : '' }}">Pagamentos</a>
-            <a href="{{ route('dados-bancarios.index') }}" class="iservice-mobile-link {{ request()->is('dados-bancario*') || request()->is('dadosbancarios*') ? 'active' : '' }}">Dados Bancários</a>
-            <a href="{{ route('habilidades.index') }}" class="iservice-mobile-link {{ request()->is('habilidade*') ? 'active' : '' }}">Habilidades</a>
-        </div>
+        <a href="{{ route('modulos.index') }}" class="iservice-mobile-link {{ request()->is('modulos*') ? 'active' : '' }}">Módulos por categoria</a>
 
         @if(Auth::check())
-            <div style="border-top: 1px solid #f1f5f9; margin-top: 0.75rem; padding-top: 0.75rem;">
-                <div style="padding: 0 0.75rem 0.5rem;">
-                    <span style="font-size: 0.85rem; font-weight: 700; color: #1e293b; display: block;">
+            <div class="iservice-mobile-account">
+                <div style="padding: 0 0.75rem 0.4rem;">
+                    <span class="iservice-user-name" style="max-width:none">
                         {{ Auth::user()->nome_razao }}
                     </span>
-                    <span style="font-size: 0.75rem; color: #0047AB; font-weight: 600;">
-                        Perfil: {{ Auth::user()->tipo }}
+                    <span class="iservice-user-role">
+                        {{ Auth::user()->tipo }}
                     </span>
                 </div>
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="iservice-mobile-link" style="width: 100%; text-align: left; background: none; border: none; color: #dc2626 !important; font-weight: 600;">
-                        Sair da Conta
-                    </button>
-                </form>
-            </div>
-        @else
-            <div style="border-top: 1px solid #f1f5f9; margin-top: 0.75rem; padding-top: 0.75rem;">
-                <a href="{{ route('login') }}" class="iservice-mobile-link" style="color: #0047AB !important; font-weight: 700;">
-                    Fazer Login
-                </a>
+                <div class="iservice-mobile-actions">
+                    <a href="{{ $painelRoute }}" class="iservice-account-link">Meu painel</a>
+                    <form action="{{ route('logout') }}" method="POST" class="flex-grow-1">
+                        @csrf
+                        <button type="submit" class="iservice-logout w-100">Sair da conta</button>
+                    </form>
+                </div>
             </div>
         @endif
     </div>
 </nav>
 
 <script>
-    function toggleIserviceDropdown(event) {
-        event.stopPropagation();
-        var menu = document.getElementById('iserviceDropdownMenu');
-        if (menu) {
-            menu.classList.toggle('show');
-        }
-    }
-
-    function toggleIserviceMobileMenu() {
+    function toggleIserviceMobileMenu(button) {
         var mobileMenu = document.getElementById('iserviceMobileMenu');
         if (mobileMenu) {
-            mobileMenu.classList.toggle('show');
+            var isOpen = mobileMenu.classList.toggle('show');
+            button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            button.setAttribute('aria-label', isOpen ? 'Fechar menu' : 'Abrir menu');
         }
     }
 
-    // Fecha dropdown ao clicar fora
-    document.addEventListener('click', function(e) {
-        var menu = document.getElementById('iserviceDropdownMenu');
-        var container = document.getElementById('iserviceDropdownContainer');
-        if (menu && container && !container.contains(e.target)) {
-            menu.classList.remove('show');
-        }
-    });
 </script>

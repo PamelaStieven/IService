@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ isset($usuario) ? 'Editar Usuário' : 'Novo Usuário' }} - IService</title>
+    <title>{{ $usuario->exists ? 'Editar Usuário' : 'Novo Usuário' }} - IService</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -32,10 +32,10 @@
             
             <div class="mb-6">
                 <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-diamante-suave text-cobalto mb-2">
-                    {{ isset($usuario) ? 'Atualização de Cadastro' : 'Novo Cadastro' }}
+                    {{ $usuario->exists ? 'Atualização de Cadastro' : 'Novo Cadastro' }}
                 </span>
                 <h1 class="text-2xl font-bold text-gray-900">
-                    {{ isset($usuario) ? 'Editar dados de ' . $usuario->nome_razao : 'Criar conta de usuário' }}
+                    {{ $usuario->exists ? 'Editar dados de ' . $usuario->nome_razao : 'Criar conta de usuário' }}
                 </h1>
                 <p class="text-sm text-gray-500 mt-1">Preencha os dados abaixo com atenção.</p>
             </div>
@@ -51,24 +51,30 @@
                 </div>
             @endif
 
-            <form action="{{ isset($usuario) ? route('usuario.update', $usuario->UserID) : route('usuario.store') }}" method="POST" class="space-y-5">
+            <form action="{{ $usuario->exists ? route('usuario.update', $usuario->UserID) : route('usuario.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
                 @csrf
-                @if(isset($usuario))
+                @if($usuario->exists)
                     @method('PUT')
                 @endif
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo de Perfil</label>
-                    <div class="grid grid-cols-3 gap-3" x-data="{ selected: '{{ old('tipo', $usuario->tipo ?? 'Usuário') }}' }">
-                        @foreach(['Usuário', 'Técnico', 'Administrador'] as $tipoOption)
-                            <label @click="selected = '{{ $tipoOption }}'"
-                                   :class="selected === '{{ $tipoOption }}' ? 'bg-cobalto text-white border-[#0047AB] shadow-sm' : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-diamante-suave/50'"
-                                   class="cursor-pointer border rounded-2xl py-3 px-2 text-center text-sm font-semibold transition-all select-none">
-                                <input type="radio" name="tipo" value="{{ $tipoOption }}" class="hidden" :checked="selected === '{{ $tipoOption }}'">
-                                {{ $tipoOption }}
-                            </label>
-                        @endforeach
-                    </div>
+                    @if($usuario->exists && $usuario->tipo === 'Técnico')
+                        <div class="rounded-2xl border border-diamante bg-diamante-suave px-4 py-3 text-sm text-cobalto">
+                            Perfil Técnico. Os dados profissionais são gerenciados na seção de técnicos.
+                        </div>
+                    @else
+                        <div class="grid grid-cols-2 gap-3" x-data="{ selected: '{{ old('tipo', $usuario->tipo ?? 'Usuário') }}' }">
+                            @foreach(['Usuário', 'Administrador'] as $tipoOption)
+                                <label @click="selected = '{{ $tipoOption }}'"
+                                       :class="selected === '{{ $tipoOption }}' ? 'bg-cobalto text-white border-[#0047AB] shadow-sm' : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-diamante-suave/50'"
+                                       class="cursor-pointer border rounded-2xl py-3 px-2 text-center text-sm font-semibold transition-all select-none">
+                                    <input type="radio" name="tipo" value="{{ $tipoOption }}" class="hidden" :checked="selected === '{{ $tipoOption }}'">
+                                    {{ $tipoOption }}
+                                </label>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
 
                 <div>
@@ -85,6 +91,25 @@
                            value="{{ old('email', $usuario->email ?? '') }}"
                            placeholder="exemplo@email.com"
                            class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-1.5">
+                            Senha {{ $usuario->exists ? '(opcional)' : '*' }}
+                        </label>
+                        <input type="password" id="password" name="password" minlength="6"
+                               {{ $usuario->exists ? '' : 'required' }} autocomplete="new-password"
+                               class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+                    </div>
+                    <div>
+                        <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-1.5">
+                            Confirmar senha {{ $usuario->exists ? '(opcional)' : '*' }}
+                        </label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" minlength="6"
+                               {{ $usuario->exists ? '' : 'required' }} autocomplete="new-password"
+                               class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -110,6 +135,17 @@
                     <input type="date" id="data_nascimento" name="data_nascimento" required
                            value="{{ old('data_nascimento', isset($usuario->data_nascimento) ? $usuario->data_nascimento->format('Y-m-d') : '') }}"
                            class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+                </div>
+
+                <div>
+                    <label for="foto" class="block text-sm font-semibold text-gray-700 mb-1.5">Foto do usuário</label>
+                    @if($usuario->exists && $usuario->foto)
+                        <img src="{{ route('usuario.foto', $usuario->UserID) }}" alt="Foto de {{ $usuario->nome_razao }}"
+                             class="mb-3 h-20 w-20 rounded-2xl object-cover">
+                    @endif
+                    <input type="file" id="foto" name="foto" accept=".jpg,.jpeg,.png,.webp"
+                           class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm">
+                    <p class="mt-1 text-xs text-gray-500">JPG, PNG ou WEBP; até 5 MB.</p>
                 </div>
 
                 <div class="pt-4">

@@ -1,12 +1,13 @@
 
 @extends('main')
-@section('titulo', isset($dado->id) ? 'Editar Endereço' : 'Novo Endereço')
+@php($isEdit = isset($dado) && $dado->exists)
+@section('titulo', $isEdit ? 'Editar Endereço' : 'Novo Endereço')
 
 @section('conteudo')
-<div class="container my-4">
+<div class="container my-4 iservice-form-shell">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">{{ isset($dado->id) ? 'Editar Endereço' : 'Novo Endereço' }}</h4>
+            <h4 class="mb-0">{{ $isEdit ? 'Editar Endereço' : 'Novo Endereço' }}</h4>
         </div>
 
         <div class="card-body">
@@ -21,29 +22,37 @@
                 </div>
             @endif
 
-            <form action="{{ isset($dado->id) ? route('enderecos.update', $dado->id) : route('enderecos.store') }}" method="POST">
+            <form action="{{ isset($usuario) ? route('usuario.enderecos.store', $usuario->UserID) : ($isEdit ? route('enderecos.update', $dado->EnderecosID) : route('enderecos.store')) }}" method="POST">
 
                 @csrf
 
-                @if(isset($dado->id))
+                @if($isEdit)
                     @method('PUT')
                 @endif
 
                 <div class="row g-3">
 
-                    <div class="col-md-6">
-                        <label for="usuario_id" class="form-label">Usuário *</label>
-                        <select name="usuario_id" id="usuario_id" class="form-select" required>
-                            <option value="">Selecione um usuário</option>
+                    @if(isset($usuario))
+                        <input type="hidden" name="UserID" value="{{ $usuario->UserID }}">
+                        <div class="col-md-6">
+                            <label class="form-label">Usuário</label>
+                            <div class="form-control bg-light">{{ $usuario->nome_razao }}</div>
+                        </div>
+                    @else
+                        <div class="col-md-6">
+                            <label for="UserID" class="form-label">Usuário *</label>
+                            <select name="UserID" id="UserID" class="form-select" required>
+                                <option value="">Selecione um usuário</option>
 
-                            @foreach($usuarios as $usuario)
-                                <option value="{{ $usuario->id }}"
-                                    {{ old('usuario_id', $dado->usuario_id ?? '') == $usuario->id ? 'selected' : '' }}>
-                                    {{ $usuario->nome }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                                @foreach($usuarios as $usuarioOption)
+                                    <option value="{{ $usuarioOption->UserID }}"
+                                        {{ old('UserID', $dado->userID ?? '') == $usuarioOption->UserID ? 'selected' : '' }}>
+                                        {{ $usuarioOption->nome_razao }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
 
                     <div class="col-md-6">
                         <label for="apelido" class="form-label">Apelido *</label>
@@ -89,7 +98,7 @@
 
                 <div class="mt-4">
                     <button type="submit" class="btn btn-success me-2">Salvar</button>
-                    <a href="{{ route('enderecos.index') }}" class="btn btn-secondary">Cancelar</a>
+                    <a href="{{ isset($usuario) ? route('usuario.enderecos.index', $usuario->UserID) : route('enderecos.index') }}" class="btn btn-secondary">Cancelar</a>
                 </div>
 
             </form>

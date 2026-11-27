@@ -23,6 +23,7 @@
     @include('navbar')
 
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        @include('components.report-actions', ['tipo' => 'tecnicos'])
 
         @if(session('success'))
             <div x-data="{ show: true }" x-show="show" x-transition
@@ -78,9 +79,14 @@
                     <div class="p-5">
                         <div class="flex items-start justify-between gap-2 mb-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-2xl bg-diamante-suave text-cobalto font-bold flex items-center justify-center text-base shrink-0">
-                                    {{ strtoupper(substr($u->nome_razao ?? 'T', 0, 2)) }}
-                                </div>
+                                @if($u && $u->foto)
+                                    <img src="{{ route('usuario.foto', $u->UserID) }}" alt="Foto de {{ $u->nome_razao }}"
+                                         class="w-11 h-11 rounded-2xl object-cover shrink-0">
+                                @else
+                                    <div class="w-11 h-11 rounded-2xl bg-diamante-suave text-cobalto font-bold flex items-center justify-center text-base shrink-0">
+                                        {{ strtoupper(substr($u->nome_razao ?? 'T', 0, 2)) }}
+                                    </div>
+                                @endif
                                 <div>
                                     <h2 class="font-bold text-gray-900 text-base leading-snug line-clamp-1">{{ $u->nome_razao ?? '—' }}</h2>
                                     <span class="text-xs text-gray-400">Técnico #{{ $tecnico->TecnicoID }}</span>
@@ -137,6 +143,10 @@
                         @endif
 
                         <div class="flex items-center gap-2">
+                            <a href="{{ route('tecnicos.dados-bancarios', $tecnico->TecnicoID) }}"
+                               class="px-3 py-1.5 rounded-full text-xs font-semibold text-cobalto bg-white border border-diamante hover:bg-diamante-suave transition">
+                                Ver dados bancários
+                            </a>
                             <a href="{{ route('tecnicos.edit', $tecnico->TecnicoID) }}"
                                class="px-4 py-1.5 rounded-full text-xs font-semibold text-cobalto bg-diamante-suave hover:bg-[#cceeff] transition">
                                 Editar

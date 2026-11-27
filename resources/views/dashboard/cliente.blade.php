@@ -76,6 +76,33 @@
         </div>
     </div>
 
+    <div class="card border-0 shadow-sm rounded-4 bg-white mb-4">
+        <div class="card-header bg-white border-0 py-3 px-4 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div>
+                <h5 class="fw-bold text-dark mb-0">Meus endereços</h5>
+                <small class="text-muted">Locais vinculados à sua conta</small>
+            </div>
+            <a href="{{ route('cliente.enderecos.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                Gerenciar endereços
+            </a>
+        </div>
+        <div class="card-body px-4 pt-0">
+            @forelse($enderecos as $endereco)
+                <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 border-top py-3">
+                    <div>
+                        <div class="fw-semibold">{{ $endereco->apelido }}</div>
+                        <div class="small text-muted">{{ $endereco->rua }}, {{ $endereco->numero }} &middot; {{ $endereco->bairro }}</div>
+                        <div class="small text-muted">{{ $endereco->cidade }}, {{ $endereco->estado }} {{ $endereco->cep }}</div>
+                    </div>
+                </div>
+            @empty
+                <div class="border-top py-3 text-muted small">
+                    Você ainda não cadastrou endereços. Adicione um para agilizar seus próximos agendamentos.
+                </div>
+            @endforelse
+        </div>
+    </div>
+
     <!-- Tabela de Meus Agendamentos Recentes -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
         <div class="card-header bg-white border-0 py-3 px-4 d-flex align-items-center justify-content-between">

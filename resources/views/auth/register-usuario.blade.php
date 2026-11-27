@@ -62,7 +62,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('register.usuario.submit') }}" method="POST" class="space-y-4">
+            <form action="{{ route('register.usuario.submit') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
 
                 <!-- Nome / Razão Social -->
@@ -140,6 +140,72 @@
                            value="{{ old('data_nascimento') }}"
                            class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
                 </div>
+
+                <div>
+                    <label for="foto" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Foto de perfil</label>
+                    <input type="file" id="foto" name="foto" accept=".jpg,.jpeg,.png,.webp"
+                           class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm">
+                    <p class="mt-1 text-xs text-slate-500">Opcional; JPG, PNG ou WEBP, até 5 MB.</p>
+                </div>
+
+                <section class="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5 space-y-4">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-800">Endereço principal</h2>
+                        <p class="mt-1 text-xs text-slate-500">Você poderá cadastrar outros endereços na sua área de cliente.</p>
+                    </div>
+
+                    <div>
+                        <label for="apelido" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Identificação</label>
+                        <input type="text" id="apelido" name="apelido" maxlength="55" required value="{{ old('apelido', 'Casa') }}"
+                               placeholder="Ex: Casa, Trabalho"
+                               class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="sm:col-span-2">
+                            <label for="rua" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Rua / Avenida</label>
+                            <input type="text" id="rua" name="rua" maxlength="55" required value="{{ old('rua') }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                        </div>
+                        <div>
+                            <label for="numero" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Número</label>
+                            <input type="number" id="numero" name="numero" min="0" required value="{{ old('numero') }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="bairro" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Bairro</label>
+                            <input type="text" id="bairro" name="bairro" maxlength="55" required value="{{ old('bairro') }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                        </div>
+                        <div>
+                            <label for="cep" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">CEP</label>
+                            <input type="text" id="cep" name="cep" maxlength="11" required value="{{ old('cep') }}"
+                                   placeholder="00000-000"
+                                   class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label for="cidade" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Cidade</label>
+                            <input type="text" id="cidade" name="cidade" maxlength="55" required value="{{ old('cidade') }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                        </div>
+                        <div>
+                            <label for="estado" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Estado</label>
+                            <input type="text" id="estado" name="estado" maxlength="55" required value="{{ old('estado') }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                        </div>
+                        <div>
+                            <label for="pais" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">País</label>
+                            <input type="text" id="pais" name="pais" maxlength="55" required value="{{ old('pais', 'Brasil') }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                        </div>
+                    </div>
+                </section>
 
                 <!-- Termos e Botão -->
                 <div class="pt-3">

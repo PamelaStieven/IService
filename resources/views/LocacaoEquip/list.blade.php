@@ -23,6 +23,7 @@
     @include('navbar')
 
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        @include('components.report-actions', ['tipo' => 'locacoes'])
 
         @if(session('success'))
             <div x-data="{ show: true }" x-show="show" x-transition

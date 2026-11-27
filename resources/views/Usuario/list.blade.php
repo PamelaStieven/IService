@@ -23,6 +23,7 @@
     @include('navbar')
 
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        @include('components.report-actions', ['tipo' => 'usuarios'])
         
         @if(session('success'))
             <div x-data="{ show: true }" x-show="show" x-transition
@@ -38,7 +39,7 @@
         <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Usuários Cadastrados</h1>
-                <p class="text-sm text-gray-500 mt-0.5">Gerencie técnicos, administradores e clientes da plataforma.</p>
+                <p class="text-sm text-gray-500 mt-0.5">Gerencie administradores e clientes da plataforma.</p>
             </div>
 
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -50,7 +51,6 @@
 
                 <select x-model="filtroTipo" class="px-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm text-gray-700 focus:outline-none focus:border-[#0047AB] transition">
                     <option value="">Todos os Perfis</option>
-                    <option value="Técnico">Técnico</option>
                     <option value="Administrador">Administrador</option>
                     <option value="Usuário">Usuário</option>
                 </select>
@@ -72,9 +72,14 @@
                     <div>
                         <div class="flex items-start justify-between gap-2 mb-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-2xl bg-diamante-suave text-cobalto font-bold flex items-center justify-center text-base shrink-0">
-                                    {{ strtoupper(substr($usuario->nome_razao, 0, 2)) }}
-                                </div>
+                                @if($usuario->foto)
+                                    <img src="{{ route('usuario.foto', $usuario->UserID) }}" alt="Foto de {{ $usuario->nome_razao }}"
+                                         class="w-11 h-11 rounded-2xl object-cover shrink-0">
+                                @else
+                                    <div class="w-11 h-11 rounded-2xl bg-diamante-suave text-cobalto font-bold flex items-center justify-center text-base shrink-0">
+                                        {{ strtoupper(substr($usuario->nome_razao, 0, 2)) }}
+                                    </div>
+                                @endif
                                 <div>
                                     <h2 class="font-bold text-gray-900 text-base leading-snug line-clamp-1">{{ $usuario->nome_razao }}</h2>
                                     <span class="text-xs text-gray-400">ID #{{ $usuario->UserID }}</span>
@@ -84,7 +89,6 @@
                             @php
                                 $badgeClass = match($usuario->tipo) {
                                     'Administrador' => 'bg-cobalto text-white',
-                                    'Técnico'       => 'bg-diamante-suave text-cobalto border border-diamante',
                                     default         => 'bg-gray-100 text-gray-600'
                                 };
                             @endphp
@@ -106,7 +110,15 @@
                         </div>
                     </div>
 
-                    <div class="mt-5 pt-3 border-t border-gray-100 flex items-center justify-end gap-2">
+                    <div class="mt-5 pt-3 border-t border-gray-100 flex flex-wrap items-center justify-end gap-2">
+                        <a href="{{ route('usuario.enderecos.index', $usuario->UserID) }}"
+                           class="px-3 py-1.5 rounded-full text-xs font-semibold text-cobalto bg-white border border-diamante hover:bg-diamante-suave transition">
+                            Lista de endereços
+                        </a>
+                        <a href="{{ route('usuario.enderecos.create', $usuario->UserID) }}"
+                           class="px-3 py-1.5 rounded-full text-xs font-semibold text-white bg-cobalto hover:bg-[#003580] transition">
+                            Cadastrar endereço
+                        </a>
                         <a href="{{ route('usuario.edit', $usuario->UserID) }}" 
                            class="px-4 py-1.5 rounded-full text-xs font-semibold text-cobalto bg-diamante-suave hover:bg-[#cceeff] transition">
                             Editar

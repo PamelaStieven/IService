@@ -11,15 +11,17 @@ class ItemServicoController extends Controller
 {
     public function index(Request $request)
     {
-        $valor =$request->input('valor');
-        $tipo  =$request->input('tipo', 'descricao_item');
+        $valor = $request->input('valor');
+        $tipo = $request->input('tipo', 'descricao_item');
 
         $colunasPermitidas = ['descricao_item', 'data_item'];
-        if (!in_array($tipo, $colunasPermitidas, true)) {$tipo = 'descricao_item';
+        if (!in_array($tipo, $colunasPermitidas, true)) {
+            $tipo = 'descricao_item';
         }
 
         $dados = ItemServico::with(['agendamento', 'servico'])
-            ->when(!empty($valor), function ($query) use ($tipo, $valor) {$query->where($tipo, 'like', '\%' .$valor . '%');
+            ->when(!empty($valor), function ($query) use ($tipo, $valor) {
+                $query->where($tipo, 'like', '%' . $valor . '%');
             })
             ->orderByDesc('ItemServicoID')
             ->get();
@@ -39,7 +41,8 @@ class ItemServicoController extends Controller
     public function create()
     {
         $dado = new ItemServico();
-        $agendamentos = Agendamento::all();$servicos = Servico::all();
+        $agendamentos = Agendamento::all();
+        $servicos = Servico::all();
 
         return view('ItemServico.form', compact('dado', 'agendamentos', 'servicos'));
     }
@@ -82,7 +85,8 @@ class ItemServicoController extends Controller
     public function edit($id)
     {
         $dado = ItemServico::findOrFail($id);
-        $agendamentos = Agendamento::all();$servicos = Servico::all();
+        $agendamentos = Agendamento::all();
+        $servicos = Servico::all();
 
         return view('ItemServico.form', compact('dado', 'agendamentos', 'servicos'));
     }

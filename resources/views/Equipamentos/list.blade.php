@@ -4,6 +4,7 @@
 @section('conteudo')
 
 <div class="container my-4">
+    @include('components.report-actions', ['tipo' => 'equipamentos'])
 
     <!-- Cabeçalho da Página com Título, Subtítulo e Botão de Novo -->
     <div class="row align-items-center mb-4">
@@ -22,23 +23,26 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                <div class="row g-3">
+                <form action="{{ route('equipamentos.search') }}" method="GET" class="row g-3">
                     <div class="col-md-8">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-0 text-muted ps-3">
                                 <i class="bi bi-search"></i>🔍
                             </span>
-                            <input type="text" class="form-control bg-light border-0 py-2" placeholder="Buscar por nome ou modelo...">
+                            <input type="search" name="valor" value="{{ $valor ?? '' }}" class="form-control bg-light border-0 py-2" placeholder="Buscar equipamento...">
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <select class="form-select bg-light border-0 py-2">
-                            <option selected>Todos os Status</option>
-                            <option value="Disponível">Disponível</option>
-                            <option value="Alugado">Alugado</option>
+                    <div class="col-md-3">
+                        <select name="tipo" class="form-select bg-light border-0 py-2">
+                            <option value="nome" {{ ($tipo ?? '') === 'nome' ? 'selected' : '' }}>Nome</option>
+                            <option value="modelo" {{ ($tipo ?? '') === 'modelo' ? 'selected' : '' }}>Modelo</option>
+                            <option value="status" {{ ($tipo ?? '') === 'status' ? 'selected' : '' }}>Status</option>
                         </select>
                     </div>
-                </div>
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -56,13 +60,14 @@
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white position-relative">
                     
-                    <!-- Topo do Card: Avatar com iniciais, Nome, Modelo e Badge de Status -->
+                    @if($item->imagem)
+                        <img src="{{ route('equipamentos.imagem', $item->EquipID) }}" alt="Imagem de {{ $item->nome }}"
+                             class="mb-3 w-100 rounded-3" style="height: 170px; object-fit: cover;">
+                    @endif
+
+                    <!-- Topo do Card: Nome, Modelo e Badge de Status -->
                     <div class="d-flex align-items-start justify-content-between mb-3">
                         <div class="d-flex align-items-center">
-                            <!-- Círculo com as iniciais do equipamento -->
-                            <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.1rem;">
-                                {{ strtoupper(substr($item->nome, 0, 2)) }}
-                            </div>
                             <div>
                                 <h5 class="fw-bold mb-0 text-dark">{{ $item->nome }}</h5>
                                 <small class="text-muted">ID #{{ $item->EquipID }}</small>
@@ -80,8 +85,9 @@
                     <!-- Corpo do Card: Informações Detalhadas -->
                     <div class="card-body px-0 py-2 text-muted small">
                         <p class="mb-1"><strong>Modelo:</strong> {{ $item->modelo }}</p>
-                        <p class="mb-1"><strong>Usuário Responsável:</strong> {{ optional($item->usuario)->nome ?? 'Não atribuído' }}</p>
-                        <p class="mb-1"><strong>Valor do Aluguel:</strong> <span class="text-dark fw-bold">R$ {{ number_format($item->valor_aluguel, 2, ',', '.') }}</span></p>
+                        <p class="mb-1"><strong>Usuário Responsável:</strong> {{ optional($item->usuario)->nome_razao ?? 'Não atribuído' }}</p>
+                        <p class="mb-1"><strong>Conservação:</strong> {{ $item->estado_conservacao ?? 'Bom' }}</p>
+                        <p class="mb-1"><strong>Valor da diária:</strong> <span class="text-dark fw-bold">R$ {{ number_format($item->valor_diaria ?? $item->valor_aluguel, 2, ',', '.') }}</span></p>
                         <p class="mb-0 text-truncate"><strong>Descrição:</strong> {{ $item->descricao_tecnica }}</p>
                     </div>
 

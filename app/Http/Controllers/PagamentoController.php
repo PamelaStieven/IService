@@ -14,12 +14,17 @@ class PagamentoController extends Controller
         $valor = $request->input('valor');
         $tipo  = $request->input('tipo', 'metodo');
 
+        $colunasPermitidas = ['metodo', 'valor_total', 'taxa_site', 'status_pagamento', 'data_pagamento'];
+        if (!in_array($tipo, $colunasPermitidas, true)) {
+            $tipo = 'metodo';
+        }
+
         $dados = Pagamento::with(['agendamento', 'locacaoEquip'])
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
                 $query->where($tipo, 'like', '%' . $valor . '%');
             })->get();
 
-        return view('pagamento.list', [
+        return view('Pagamento.list', [
             'dados' => $dados,
             'tipo'  => $tipo,
             'valor' => $valor
@@ -36,18 +41,18 @@ class PagamentoController extends Controller
         $dado = new Pagamento();
         $agendamentos = Agendamento::all();
         $locacoes = LocacaoEquip::all();
-        return view('pagamento.form', compact('dado', 'agendamentos', 'locacoes'));
+        return view('Pagamento.form', compact('dado', 'agendamentos', 'locacoes'));
     }
 
     private function validateForm(Request $request)
     {
         $request->validate([
-            'AgendamentoID'         => 'nullable|exists:Agendamento,AgendamentoID',
-            'LocEquipID'       => 'nullable|exists:LocacaoEquip,LocEquipID',
+            'AgendamentoID'    => 'nullable|exists:agendamento,AgendamentoID',
+            'LocEquipID'       => 'nullable|exists:locacao_equips,LocEquipID',
             'metodo'           => 'required|in:PIX,Boleto',
             'valor_total'      => 'required|numeric|min:0',
             'taxa_site'        => 'required|numeric|min:0',
-            'status_pagamento' => 'required|integer',
+            'status_pagamento' => 'required|boolean',
             'data_pagamento'   => 'required|date',
         ], [
             'metodo.required'           => 'Selecione o método de pagamento.',
@@ -72,7 +77,7 @@ class PagamentoController extends Controller
         $dado = Pagamento::findOrFail($id);
         $agendamentos = Agendamento::all();
         $locacoes = LocacaoEquip::all();
-        return view('pagamentos.form', compact('dado', 'agendamentos', 'locacoes'));
+        return view('Pagamento.form', compact('dado', 'agendamentos', 'locacoes'));
     }
 
     public function update(Request $request, $id)

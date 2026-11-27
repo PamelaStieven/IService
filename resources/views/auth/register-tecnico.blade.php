@@ -157,11 +157,76 @@
                            class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
                 </div>
 
+                <div>
+                    <label for="foto" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Foto de perfil</label>
+                    <input type="file" id="foto" name="foto" accept=".jpg,.jpeg,.png,.webp"
+                           class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm">
+                    <p class="mt-1 text-xs text-slate-500">Opcional; JPG, PNG ou WEBP, até 5 MB.</p>
+                </div>
+
+                <div>
+                    <label for="habilidades" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Habilidades *</label>
+                    <textarea id="habilidades" name="habilidades" rows="4" required
+                              placeholder="Informe uma habilidade por linha"
+                              class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">{{ old('habilidades') }}</textarea>
+                    <p class="mt-1 text-xs text-slate-500">Ex.: elétrica residencial, hidráulica, instalação.</p>
+                </div>
+
+                <section class="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5 space-y-4">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-800">Dados bancários para recebimento</h2>
+                        <p class="mt-1 text-xs text-slate-500">Esses dados ficam vinculados ao seu perfil de técnico para os repasses.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="banco" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Banco</label>
+                            <input type="text" id="banco" name="banco" maxlength="55" required value="{{ old('banco') }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                        </div>
+                        <div>
+                            <label for="agencia" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Agência</label>
+                            <input type="text" id="agencia" name="agencia" maxlength="6" required value="{{ old('agencia') }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="numero_conta" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Número da conta</label>
+                            <input type="text" id="numero_conta" name="numero_conta" maxlength="16" required value="{{ old('numero_conta') }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                        </div>
+                        <div>
+                            <label for="tipo_conta" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Tipo de conta</label>
+                            <select id="tipo_conta" name="tipo_conta" required
+                                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                                <option value="">Selecione</option>
+                                <option value="1" {{ old('tipo_conta') == '1' ? 'selected' : '' }}>Corrente</option>
+                                <option value="2" {{ old('tipo_conta') == '2' ? 'selected' : '' }}>Poupança</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="titular" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Titular da conta</label>
+                            <input type="text" id="titular" name="titular" maxlength="55" required value="{{ old('titular', old('nome_razao')) }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                        </div>
+                        <div>
+                            <label for="cpf_cnpj_titular" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">CPF/CNPJ do titular</label>
+                            <input type="text" id="cpf_cnpj_titular" name="cpf_cnpj_titular" maxlength="18" required value="{{ old('cpf_cnpj_titular', old('cpf_cnpj')) }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-4 focus:ring-blue-500/10 transition">
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Upload de Certificado / Documento Profissional -->
                 <div x-data="{ fileName: '', isDragging: false }"
                      @dragover.prevent="isDragging = true"
                      @dragleave.prevent="isDragging = false"
-                     @drop.prevent="isDragging = false; fileName = $event.dataTransfer.files[0]?.name ?? ''">
+                     @drop.prevent="isDragging = false; if ($event.dataTransfer.files.length) { $refs.documento.files = $event.dataTransfer.files; fileName = $event.dataTransfer.files[0].name; }">
 
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                         Certificado ou Documento Profissional
@@ -183,6 +248,7 @@
 
                         <input id="documento" name="documento" type="file"
                                accept=".pdf,.jpg,.jpeg,.png"
+                               x-ref="documento"
                                class="sr-only"
                                @change="fileName = $event.target.files[0]?.name ?? ''">
                     </label>

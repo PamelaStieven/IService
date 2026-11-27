@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Usuario;
 use App\Models\Tecnicos;
+use App\Models\Enderecos;
+use App\Models\DadosBancarios;
+use App\Models\Habilidade;
+use App\Rules\CpfCnpjValido;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -92,13 +96,22 @@ class AuthController extends Controller
      */
     public function registerUsuario(Request $request)
     {
-        $request->validate([
+        $dados = $request->validate([
             'nome_razao'      => 'required|string|max:55',
             'email'           => 'required|email|max:55|unique:usuario,email',
             'password'        => 'required|string|min:6|confirmed',
             'cpf_cnpj'        => 'required|string|max:18|unique:usuario,cpf_cnpj',
             'telefone'        => 'required|string|max:14',
             'data_nascimento' => 'required|date',
+            'foto'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'apelido'         => 'required|string|max:55',
+            'rua'             => 'required|string|max:55',
+            'numero'          => 'required|integer',
+            'bairro'          => 'required|string|max:55',
+            'cep'             => 'required|string|max:11',
+            'cidade'          => 'required|string|max:55',
+            'estado'          => 'required|string|max:55',
+            'pais'            => 'required|string|max:55',
         ], [
             'nome_razao.required'      => 'O campo nome completo é obrigatório.',
             'email.required'           => 'O e-mail é obrigatório.',
@@ -112,17 +125,59 @@ class AuthController extends Controller
             'telefone.required'        => 'O telefone é obrigatório.',
             'data_nascimento.required' => 'A data de nascimento é obrigatória.',
             'data_nascimento.date'     => 'Informe uma data válida.',
+            'apelido.required'         => 'Informe um nome para identificar o endereço.',
+            'rua.required'             => 'A rua é obrigatória.',
+            'numero.required'          => 'O número do endereço é obrigatório.',
+            'numero.integer'           => 'Informe um número de endereço válido.',
+            'bairro.required'          => 'O bairro é obrigatório.',
+            'cep.required'             => 'O CEP é obrigatório.',
+            'cidade.required'          => 'A cidade é obrigatória.',
+            'estado.required'          => 'O estado é obrigatório.',
+            'pais.required'            => 'O país é obrigatório.',
         ]);
 
-        $usuario = Usuario::create([
-            'nome_razao'      => $request->input('nome_razao'),
-            'email'           => $request->input('email'),
-            'password'        => Hash::make($request->input('password')),
-            'cpf_cnpj'        => $request->input('cpf_cnpj'),
-            'telefone'        => $request->input('telefone'),
-            'data_nascimento' => $request->input('data_nascimento'),
-            'tipo'            => 'Usuário',
-        ]);
+        $foto = null;
+        if ($request->hasFile('foto')) {
+            $foto = $request->file('foto')->store('fotos/usuarios', 'public');
+            if (!$foto) {
+                return back()->withInput()->withErrors([
+                    'foto' => 'Não foi possível salvar a foto. Tente novamente.',
+                ]);
+            }
+        }
+
+        try {
+            DB::transaction(function () use ($dados, $foto, &$usuario) {
+            $usuario = Usuario::create([
+                'nome_razao'      => $dados['nome_razao'],
+                'email'           => $dados['email'],
+                'password'        => Hash::make($dados['password']),
+                'cpf_cnpj'        => $dados['cpf_cnpj'],
+                'telefone'        => $dados['telefone'],
+                'data_nascimento' => $dados['data_nascimento'],
+                'tipo'            => 'Usuário',
+                'foto'            => $foto,
+            ]);
+
+            Enderecos::create([
+                'userID'  => $usuario->UserID,
+                'apelido' => $dados['apelido'],
+                'rua'     => $dados['rua'],
+                'numero'  => $dados['numero'],
+                'bairro'  => $dados['bairro'],
+                'cep'     => $dados['cep'],
+                'cidade'  => $dados['cidade'],
+                'estado'  => $dados['estado'],
+                'pais'    => $dados['pais'],
+            ]);
+            });
+        } catch (\Throwable $exception) {
+            if ($foto) {
+                Storage::disk('public')->delete($foto);
+            }
+
+            throw $exception;
+        }
 
         Auth::login($usuario);
         $request->session()->regenerate();
@@ -148,14 +203,22 @@ class AuthController extends Controller
      */
     public function registerTecnico(Request $request)
     {
-        $request->validate([
+        $dados = $request->validate([
             'nome_razao'      => 'required|string|max:55',
             'email'           => 'required|email|max:55|unique:usuario,email',
             'password'        => 'required|string|min:6|confirmed',
             'cpf_cnpj'        => 'required|string|max:18|unique:usuario,cpf_cnpj',
             'telefone'        => 'required|string|max:14',
             'data_nascimento' => 'required|date',
+            'foto'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'habilidades'     => 'required|string|max:5000',
             'documento'       => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'banco'            => 'required|string|max:55',
+            'agencia'          => 'required|string|max:6',
+            'numero_conta'     => 'required|string|max:16',
+            'tipo_conta'       => 'required|in:1,2',
+            'titular'          => 'required|string|max:55',
+            'cpf_cnpj_titular' => ['required', 'string', 'max:18', new CpfCnpjValido()],
         ], [
             'nome_razao.required'      => 'O campo nome completo é obrigatório.',
             'email.required'           => 'O e-mail é obrigatório.',
@@ -169,38 +232,102 @@ class AuthController extends Controller
             'telefone.required'        => 'O telefone é obrigatório.',
             'data_nascimento.required' => 'A data de nascimento é obrigatória.',
             'data_nascimento.date'     => 'Informe uma data válida.',
+            'habilidades.required'     => 'Informe suas habilidades, uma por linha.',
             'documento.file'           => 'O certificado deve ser um arquivo.',
             'documento.mimes'          => 'O certificado deve ser um arquivo PDF, JPG ou PNG.',
             'documento.max'            => 'O arquivo de certificado não pode ultrapassar 5 MB.',
+            'banco.required'            => 'Informe o banco para recebimento dos repasses.',
+            'agencia.required'          => 'Informe a agência da conta.',
+            'numero_conta.required'     => 'Informe o número da conta.',
+            'tipo_conta.required'       => 'Selecione o tipo de conta.',
+            'titular.required'          => 'Informe o titular da conta.',
+            'cpf_cnpj_titular.required' => 'Informe o CPF/CNPJ do titular da conta.',
         ]);
 
-        DB::transaction(function () use ($request, &$usuario) {
+        unset($dados['foto'], $dados['documento']);
+        $foto = null;
+        $caminhoCertificado = null;
+        if ($request->hasFile('foto')) {
+            $foto = $request->file('foto')->store('fotos/usuarios', 'public');
+            if (!$foto) {
+                return back()->withInput()->withErrors([
+                    'foto' => 'Não foi possível salvar a foto. Tente novamente.',
+                ]);
+            }
+        }
+        if ($request->hasFile('documento')) {
+            $caminhoCertificado = $request->file('documento')->store('certificados', 'public');
+            if (!$caminhoCertificado) {
+                if ($foto) {
+                    Storage::disk('public')->delete($foto);
+                }
+                return back()->withInput()->withErrors([
+                    'documento' => 'Não foi possível salvar o certificado. Tente novamente.',
+                ]);
+            }
+        }
+
+        try {
+            DB::transaction(function () use ($dados, $foto, $caminhoCertificado, &$usuario) {
             $usuario = Usuario::create([
-                'nome_razao'      => $request->input('nome_razao'),
-                'email'           => $request->input('email'),
-                'password'        => Hash::make($request->input('password')),
-                'cpf_cnpj'        => $request->input('cpf_cnpj'),
-                'telefone'        => $request->input('telefone'),
-                'data_nascimento' => $request->input('data_nascimento'),
+                'nome_razao'      => $dados['nome_razao'],
+                'email'           => $dados['email'],
+                'password'        => Hash::make($dados['password']),
+                'cpf_cnpj'        => $dados['cpf_cnpj'],
+                'telefone'        => $dados['telefone'],
+                'data_nascimento' => $dados['data_nascimento'],
                 'tipo'            => 'Técnico',
+                'foto'            => $foto,
             ]);
 
-            $caminhoCertificado = null;
-            if ($request->hasFile('documento')) {
-                $caminhoCertificado = $request->file('documento')->store('certificados', 'public');
-            }
-
-            Tecnicos::create([
+            $tecnico = Tecnicos::create([
                 'UserID'    => $usuario->UserID,
                 'documento' => $caminhoCertificado,
             ]);
-        });
+
+            DadosBancarios::create([
+                'TecnicoID'        => $tecnico->TecnicoID,
+                'banco'            => $dados['banco'],
+                'agencia'          => $dados['agencia'],
+                'numero_conta'     => $dados['numero_conta'],
+                'tipo_conta'       => $dados['tipo_conta'],
+                'titular'          => $dados['titular'],
+                'cpf_cnpj_titular' => $dados['cpf_cnpj_titular'],
+            ]);
+            foreach ($this->habilidadeDescriptions($dados['habilidades']) as $descricao) {
+                Habilidade::create([
+                    'TecnicoID' => $tecnico->TecnicoID,
+                    'descricao' => $descricao,
+                ]);
+            }
+            });
+        } catch (\Throwable $exception) {
+            foreach ([$foto, $caminhoCertificado] as $path) {
+                if ($path) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+
+            throw $exception;
+        }
 
         Auth::login($usuario);
         $request->session()->regenerate();
 
         return redirect()->route('tecnico.dashboard')
             ->with('success', 'Cadastro de técnico parceiro concluído! Bem-vindo(a) à plataforma IService.');
+    }
+
+    private function habilidadeDescriptions(string $habilidades): array
+    {
+        return collect(preg_split('/\r\n|\r|\n/', $habilidades))
+            ->map(function ($descricao) {
+                return trim($descricao);
+            })
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
     }
 
     /**

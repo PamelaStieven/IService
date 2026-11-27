@@ -6,9 +6,10 @@
 @section('conteudo')
 
 <div class="container">
+    @include('components.report-actions', ['tipo' => 'dados-bancarios'])
     <h2>Dados Bancários</h2>
 
-    <a href="{{ route('dadosbancarios.create') }}" class="btn btn-primary mb-3">
+    <a href="{{ route('dados-bancarios.create') }}" class="btn btn-primary mb-3">
         Cadastrar Dados Bancários
     </a>
 
@@ -40,12 +41,12 @@
                     <td>{{ $item->cpf_cnpj_titular }}</td>
 
                     <td>
-                        <a href="{{ route('dadosbancarios.edit', $item->ContaID) }}"
+                        <a href="{{ route('dados-bancarios.edit', $item->ContaID) }}"
                            class="btn btn-warning btn-sm">
                             Editar
                         </a>
 
-                        <form action="{{ route('dadosbancarios.destroy', $item->ContaID) }}"
+                        <form action="{{ route('dados-bancarios.destroy', $item->ContaID) }}"
                               method="POST"
                               style="display:inline;">
                             @csrf

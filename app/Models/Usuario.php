@@ -22,6 +22,7 @@ class Usuario extends Authenticatable
         'data_nascimento',
         'telefone',
         'tipo',
+        'foto',
     ];
 
     protected $hidden = [
@@ -45,7 +46,7 @@ class Usuario extends Authenticatable
 
     public function enderecos()
     {
-        return $this->hasMany(Enderecos::class, 'UserID', 'UserID');
+        return $this->hasMany(Enderecos::class, 'userID', 'UserID');
     }
 
     public function equipamentos()

@@ -6,6 +6,7 @@
 @section('conteudo')
 
 <div class="container">
+    @include('components.report-actions', ['tipo' => 'habilidades'])
     <h2>Habilidades</h2>
 
     <a href="{{ route('habilidades.create') }}" class="btn btn-primary mb-3">

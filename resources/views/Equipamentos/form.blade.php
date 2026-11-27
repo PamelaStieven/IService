@@ -3,7 +3,7 @@
 
 @section('conteudo')
 
-<div class="container my-4">
+<div class="container my-4 iservice-form-shell">
     <div class="card shadow-sm">
 
         <div class="card-header bg-primary text-white">
@@ -24,7 +24,7 @@
                 </div>
             @endif
 
-            <form action="{{ isset($dado->EquipID) ? route('equipamentos.update', $dado->EquipID) : route('equipamentos.store') }}" method="POST">
+            <form action="{{ isset($dado->EquipID) ? route('equipamentos.update', $dado->EquipID) : route('equipamentos.store') }}" method="POST" enctype="multipart/form-data">
 
                 @csrf
 
@@ -37,14 +37,13 @@
                     <div class="col-md-6">
                         <label for="UserID" class="form-label">Usuário *</label>
 
-                        <!-- Alterado para UserID -->
                         <select name="UserID" id="UserID" class="form-select" required>
                             <option value="">Selecione um usuário</option>
 
                             @foreach($usuarios as $usuario)
                                 <option value="{{ $usuario->UserID }}"
                                     {{ old('UserID', $dado->UserID ?? '') == $usuario->UserID ? 'selected' : '' }}>
-                                    {{ $usuario->nome }}
+                                    {{ $usuario->nome_razao }}
                                 </option>
                             @endforeach
                         </select>
@@ -77,29 +76,20 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label for="data_compra" class="form-label">Data da compra *</label>
-                        <input
-                            type="datetime-local"
-                            name="data_compra"
-                            id="data_compra"
-                            class="form-control"
-                            value="{{ old('data_compra', isset($dado->data_compra) ? \Carbon\Carbon::parse($dado->data_compra)->format('Y-m-d\TH:i') : '') }}"
-                            required
-                        >
+                        <label for="estado_conservacao" class="form-label">Estado de conservação *</label>
+                        <select name="estado_conservacao" id="estado_conservacao" class="form-select" required>
+                            @foreach(['Pessimo' => 'Péssimo', 'Bom' => 'Bom', 'Muito Bom' => 'Muito Bom'] as $value => $label)
+                                <option value="{{ $value }}" {{ old('estado_conservacao', $dado->estado_conservacao ?? 'Bom') === $value ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="col-md-6">
-                        <label for="valor_aluguel" class="form-label">Valor do aluguel *</label>
-                        <input
-                            type="number"
-                            name="valor_aluguel"
-                            id="valor_aluguel"
-                            class="form-control"
-                            step="0.01"
-                            min="0"
-                            value="{{ old('valor_aluguel', $dado->valor_aluguel ?? '') }}"
-                            required
-                        >
+                        <label for="valor_diaria" class="form-label">Valor da diária (R$) *</label>
+                        <input type="number" name="valor_diaria" id="valor_diaria" class="form-control"
+                               step="0.01" min="0" value="{{ old('valor_diaria', $dado->valor_diaria ?? '') }}" required>
                     </div>
 
                     <div class="col-md-6">
@@ -130,6 +120,18 @@
                             rows="4"
                             required
                         >{{ old('descricao_tecnica', $dado->descricao_tecnica ?? '') }}</textarea>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label for="imagem" class="form-label">Imagem do equipamento</label>
+                        @if($dado->imagem)
+                            <div class="mb-2">
+                                <img src="{{ route('equipamentos.imagem', $dado->EquipID) }}" alt="Imagem de {{ $dado->nome }}"
+                                     class="rounded" style="max-width: 180px; max-height: 140px; object-fit: cover;">
+                            </div>
+                        @endif
+                        <input type="file" name="imagem" id="imagem" class="form-control" accept=".jpg,.jpeg,.png,.webp">
+                        <small class="text-muted">JPG, PNG ou WEBP; até 5 MB. Deixe em branco para manter a imagem atual.</small>
                     </div>
 
                 </div>

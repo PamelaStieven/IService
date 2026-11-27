@@ -24,7 +24,7 @@ class HabilidadeController extends Controller
                 }
             })->get();
 
-        return view('habilidade.list', [
+        return view('Habilidade.list', [
             'dados' => $dados,
             'tipo'  => $tipo,
             'valor' => $valor
@@ -40,15 +40,15 @@ class HabilidadeController extends Controller
     {
         $dado = new Habilidade();
         $tecnicos = Tecnicos::with('usuario')->get();
-        return view('habilidade.form', compact('dado', 'tecnicos'));
+        return view('Habilidade.form', compact('dado', 'tecnicos'));
     }
 
     private function validateForm(Request $request)
     {
-        $request->validate([
+        return $request->validate([
             'TecnicoID' => 'required|exists:tecnicos,TecnicoID',
             'descricao' => 'required|string',
-            'cursos'    => 'nullable',
+            'cursos'    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ], [
             'TecnicoID.required' => 'Selecione um técnico.',
             'TecnicoID.exists'   => 'O técnico selecionado não foi encontrado.',
@@ -58,34 +58,41 @@ class HabilidadeController extends Controller
 
     public function store(Request $request)
     {
-        $this->validateForm($request);
+        $dados = $this->validateForm($request);
 
-        Habilidade::create($request->all());
+        if ($request->hasFile('cursos')) {
+            $dados['cursos'] = file_get_contents($request->file('cursos')->getRealPath());
+        }
+        Habilidade::create($dados);
 
-        return redirect()->route('habilidade.index')->with('success', 'Habilidade salva com sucesso!');
+        return redirect()->route('habilidades.index')->with('success', 'Habilidade salva com sucesso!');
     }
 
     public function edit($id)
     {
         $dado = Habilidade::findOrFail($id);
         $tecnicos = Tecnicos::with('usuario')->get();
-        return view('habilidade.form', compact('dado', 'tecnicos'));
+        return view('Habilidade.form', compact('dado', 'tecnicos'));
     }
 
     public function update(Request $request, $id)
     {
-        $this->validateForm($request);
-
         $habilidade = Habilidade::findOrFail($id);
-        $habilidade->update($request->all());
+        $dados = $this->validateForm($request);
+        if ($request->hasFile('cursos')) {
+            $dados['cursos'] = file_get_contents($request->file('cursos')->getRealPath());
+        } else {
+            unset($dados['cursos']);
+        }
+        $habilidade->update($dados);
 
-        return redirect()->route('habilidade.index')->with('success', 'Habilidade atualizada com sucesso!');
+        return redirect()->route('habilidades.index')->with('success', 'Habilidade atualizada com sucesso!');
     }
 
     public function destroy($id)
     {
-        Habilidade::destroy($id);
+        Habilidade::findOrFail($id)->delete();
 
-        return redirect()->route('habilidade.index')->with('success', 'Habilidade removida com sucesso!');
+        return redirect()->route('habilidades.index')->with('success', 'Habilidade removida com sucesso!');
     }
 }

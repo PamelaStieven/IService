@@ -97,6 +97,7 @@
                     <canvas id="chartCategoriasServicos"></canvas>
                 </div>
             </div>
+
         </div>
 
         <!-- Gráfico 4: Métodos de Pagamento -->
@@ -112,6 +113,7 @@
             </div>
         </div>
     </div>
+    @include('dashboard.resumo-financeiro')
 </div>
 
 <!-- Chart.js CDN -->

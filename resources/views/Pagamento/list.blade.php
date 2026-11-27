@@ -6,6 +6,7 @@
 @section('conteudo')
 
 <div class="container">
+    @include('components.report-actions', ['tipo' => 'pagamentos'])
     <h2>Pagamentos</h2>
 
     <a href="{{ route('pagamentos.create') }}" class="btn btn-primary mb-3">
@@ -31,12 +32,12 @@
             @forelse($dados as $item)
                 <tr>
                     <td>{{ $item->PagamentoID }}</td>
-                    <td>{{ $item->AgendaID ?? 'Não informado' }}</td>
+                    <td>{{ $item->AgendamentoID ?? 'Não informado' }}</td>
                     <td>{{ $item->LocEquipID ?? 'Não informado' }}</td>
                     <td>{{ $item->metodo }}</td>
                     <td>R$ {{ number_format($item->valor_total, 2, ',', '.') }}</td>
                     <td>R$ {{ number_format($item->taxa_site, 1, ',', '.') }}</td>
-                    <td>{{ $item->status_pagamento }}</td>
+                    <td>{{ $item->status_pagamento ? 'Pago' : 'Pendente' }}</td>
                     <td>{{ $item->data_pagamento }}</td>
 
                     <td>

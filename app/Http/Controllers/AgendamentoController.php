@@ -13,14 +13,18 @@ class AgendamentoController extends Controller
     public function index(Request $request)
     {
         $valor = $request->input('valor');
-        $tipo  = $request->input('tipo', 'status_servico');
+        $colunasPermitidas = ['status_servico', 'data_hora_inicio', 'data_hora_fim', 'TecnicoID', 'ServicoID', 'UserID'];
+        $tipo = $request->input('tipo', 'status_servico');
+        if (!in_array($tipo, $colunasPermitidas, true)) {
+            $tipo = 'status_servico';
+        }
 
         $dados = Agendamento::with(['tecnico.usuario', 'servico', 'usuario'])
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
                 $query->where($tipo, 'like', '%' . $valor . '%');
             })->get();
 
-        return view('agendamento.list', [
+        return view('Agendamento.list', [
             'dados' => $dados,
             'tipo'  => $tipo,
             'valor' => $valor
@@ -38,22 +42,22 @@ class AgendamentoController extends Controller
         $tecnicos = Tecnicos::with('usuario')->get();
         $servicos = Servico::all();
         $usuarios = Usuario::all();
-        return view('agendamento.form', compact('dado', 'tecnicos', 'servicos', 'usuarios'));
+        return view('Agendamento.form', compact('dado', 'tecnicos', 'servicos', 'usuarios'));
     }
 
-    private function validateForm(Request $request)
+    private function validateForm(Request $request): array
     {
-        $request->validate([
-            'TecnicoID'        => 'required|exists:Tecnicos,TecnicoID',
-            'ServicoID'        => 'required|exists:Servico,ServicoID',
-            'usuarioID'           => 'required|exists:usuario,usuarioID',
+        return $request->validate([
+            'TecnicoID'        => 'required|exists:tecnicos,TecnicoID',
+            'ServicoID'        => 'required|exists:servico,ServicoID',
+            'UserID'           => 'required|exists:usuario,UserID',
             'data_hora_inicio' => 'required|date',
             'data_hora_fim'    => 'required|date|after:data_hora_inicio',
-            'status_servico'   => 'required|in:Aceito,Pendente,Cancelado,Concluído',
+            'status_servico'   => 'required|in:Aceito,Pendente,Cancelado,Concluido',
         ], [
             'TecnicoID.required'        => 'Selecione um técnico.',
             'ServicoID.required'        => 'Selecione um serviço.',
-            'usuarioID.required'           => 'Selecione o cliente/usuário.',
+            'UserID.required'              => 'Selecione o cliente/usuário.',
             'data_hora_inicio.required' => 'Informe a data/hora inicial.',
             'data_hora_fim.required'    => 'Informe a data/hora final.',
             'data_hora_fim.after'       => 'A data final deve ser posterior à inicial.',
@@ -63,11 +67,9 @@ class AgendamentoController extends Controller
 
     public function store(Request $request)
     {
-        $this->validateForm($request);
+        Agendamento::create($this->validateForm($request));
 
-        Agendamento::create($request->all());
-
-        return redirect()->route('agendamento.index')->with('success', 'Agendamento criado com sucesso!');
+        return redirect()->route('agendamentos.index')->with('success', 'Agendamento criado com sucesso!');
     }
 
     public function edit($id)
@@ -76,23 +78,29 @@ class AgendamentoController extends Controller
         $tecnicos = Tecnicos::with('usuario')->get();
         $servicos = Servico::all();
         $usuarios = Usuario::all();
-        return view('agendamento.form', compact('dado', 'tecnicos', 'servicos', 'usuarios'));
+        return view('Agendamento.form', compact('dado', 'tecnicos', 'servicos', 'usuarios'));
+    }
+
+    public function show($id)
+    {
+        $agendamento = Agendamento::with(['tecnico.usuario', 'servico', 'usuario'])
+            ->findOrFail($id);
+
+        return view('Agendamento.show', compact('agendamento'));
     }
 
     public function update(Request $request, $id)
     {
-        $this->validateForm($request);
-
         $agendamento = Agendamento::findOrFail($id);
-        $agendamento->update($request->all());
+        $agendamento->update($this->validateForm($request));
 
-        return redirect()->route('agendamento.index')->with('success', 'Agendamento atualizado com sucesso!');
+        return redirect()->route('agendamentos.index')->with('success', 'Agendamento atualizado com sucesso!');
     }
 
     public function destroy($id)
     {
         Agendamento::destroy($id);
 
-        return redirect()->route('agendamento.index')->with('success', 'Agendamento removido com sucesso!');
+        return redirect()->route('agendamentos.index')->with('success', 'Agendamento removido com sucesso!');
     }
 }

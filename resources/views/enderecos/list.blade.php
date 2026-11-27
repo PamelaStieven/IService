@@ -5,15 +5,41 @@
 @section('conteudo')
 
 <div class="container my-4">
+    @unless(isset($usuario))
+        @include('components.report-actions', ['tipo' => 'enderecos'])
+    @endunless
 
     <div class="row mb-3">
         <div class="col">
-            <h3>Listagem de Endereços</h3>
+            <h3>
+                {{ isset($usuario) ? 'Endereços de ' . $usuario->nome_razao : 'Listagem de Endereços' }}
+            </h3>
         </div>
 
+        <form action="{{ isset($usuario) ? route('usuario.enderecos.index', $usuario->UserID) : route('enderecos.search') }}" method="GET" class="row g-2 mb-3">
+            <div class="col-md-8">
+                <input type="search" name="valor" value="{{ $valor ?? '' }}" class="form-control"
+                       placeholder="Buscar endereço...">
+            </div>
+            <div class="col-md-3">
+                <select name="tipo" class="form-select">
+                    <option value="cidade" {{ ($tipo ?? '') === 'cidade' ? 'selected' : '' }}>Cidade</option>
+                    <option value="apelido" {{ ($tipo ?? '') === 'apelido' ? 'selected' : '' }}>Apelido</option>
+                    <option value="rua" {{ ($tipo ?? '') === 'rua' ? 'selected' : '' }}>Rua</option>
+                    <option value="bairro" {{ ($tipo ?? '') === 'bairro' ? 'selected' : '' }}>Bairro</option>
+                    <option value="cep" {{ ($tipo ?? '') === 'cep' ? 'selected' : '' }}>CEP</option>
+                    <option value="estado" {{ ($tipo ?? '') === 'estado' ? 'selected' : '' }}>Estado</option>
+                    <option value="pais" {{ ($tipo ?? '') === 'pais' ? 'selected' : '' }}>País</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+            </div>
+        </form>
+
         <div class="col text-end">
-            <a href="{{ route('enderecos.create') }}" class="btn btn-success">
-                Novo
+            <a href="{{ isset($usuario) ? route('usuario.enderecos.create', $usuario->UserID) : route('enderecos.create') }}" class="btn btn-success">
+                Cadastrar endereço
             </a>
         </div>
     </div>
@@ -49,8 +75,8 @@
                 @forelse($dados as $item)
 
                     <tr>
-                        <td>{{ $item->id }}</td>
-                        <td>{{ $item->usuario->nome ?? '-' }}</td>
+                        <td>{{ $item->EnderecosID }}</td>
+                        <td>{{ $item->usuario->nome_razao ?? '-' }}</td>
                         <td>{{ $item->apelido ?? '-' }}</td>
                         <td>{{ $item->numero ?? '-' }}</td>
                         <td>{{ $item->rua ?? '-' }}</td>
@@ -62,7 +88,7 @@
                         <td class="text-center">
 
                             <a
-                                href="{{ route('enderecos.edit', $item->id) }}"
+                                href="{{ route('enderecos.edit', $item->EnderecosID) }}"
                                 class="btn btn-warning btn-sm"
                                 title="Editar"
                             >
@@ -70,7 +96,7 @@
                             </a>
 
                             <form
-                                action="{{ route('enderecos.destroy', $item->id) }}"
+                                action="{{ route('enderecos.destroy', $item->EnderecosID) }}"
                                 method="POST"
                                 class="d-inline"
                             >

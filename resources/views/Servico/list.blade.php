@@ -2,21 +2,16 @@
 
 @section('titulo', 'Serviços')
 
-@section('botao_topo')
-    <a href="{{ route('servicos.create') }}" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
-        + Novo Serviço
-    </a>
-@endsection
-
 @section('conteudo')
 <div class="container my-4">
+    @include('components.report-actions', ['tipo' => 'servicos'])
     <!-- Cabeçalho da Página -->
     <div class="row align-items-center mb-4">
         <div class="col-md-6">
             <h2 class="fw-bold text-dark mb-1">Serviços Cadastrados</h2>
             <p class="text-muted mb-0">Gerencie os serviços oferecidos pelos técnicos da plataforma.</p>
         </div>
-        <div class="col-md-6 text-md-end mt-3 mt-md-0 d-lg-none">
+        <div class="col-md-6 text-md-end mt-3 mt-md-0">
             <a href="{{ route('servicos.create') }}" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
                 + Novo Serviço
             </a>

@@ -15,7 +15,7 @@ class Enderecos extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'UserID',
+        'userID',
         'apelido',
         'rua',
         'numero',
@@ -28,6 +28,6 @@ class Enderecos extends Model
 
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'UserID', 'UserID');
+        return $this->belongsTo(Usuario::class, 'userID', 'UserID');
     }
 }

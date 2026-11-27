@@ -28,7 +28,7 @@
         </div>
     </header>
 
-    <main class="max-w-2xl mx-auto px-4 py-8">
+    <main class="max-w-3xl mx-auto px-4 py-8">
         <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100">
 
             <div class="mb-6">
@@ -78,18 +78,37 @@
                            class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
                 </div>
 
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-1.5">
+                            Senha {{ $dado->exists ? '(opcional para alterar)' : '*' }}
+                        </label>
+                        <input type="password" id="password" name="password" minlength="6"
+                               {{ $dado->exists ? '' : 'required' }} autocomplete="new-password"
+                               class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+                    </div>
+                    <div>
+                        <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-1.5">Confirmar senha</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" minlength="6"
+                               {{ $dado->exists ? '' : 'required' }} autocomplete="new-password"
+                               class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+                    </div>
+                </div>
+
                 {{-- CPF/CNPJ + Telefone --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label for="cpf_cnpj" class="block text-sm font-semibold text-gray-700 mb-1.5">CPF ou CNPJ</label>
                         <input type="text" id="cpf_cnpj" name="cpf_cnpj" maxlength="18" required
+                               value="{{ old('cpf_cnpj', $dado->usuario->cpf_cnpj ?? '') }}"
                                x-model="cpfCnpj" @input="maskCpfCnpj()"
                                placeholder="000.000.000-00"
                                class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
                     </div>
                     <div>
                         <label for="telefone" class="block text-sm font-semibold text-gray-700 mb-1.5">Telefone / WhatsApp</label>
-                        <input type="text" id="telefone" name="telefone" maxlength="14"
+                        <input type="text" id="telefone" name="telefone" maxlength="14" required
+                               value="{{ old('telefone', $dado->usuario->telefone ?? '') }}"
                                x-model="telefone" @input="maskPhone()"
                                placeholder="(00)00000-0000"
                                class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
@@ -99,16 +118,90 @@
                 {{-- Data de Nascimento --}}
                 <div>
                     <label for="data_nascimento" class="block text-sm font-semibold text-gray-700 mb-1.5">Data de Nascimento</label>
-                    <input type="date" id="data_nascimento" name="data_nascimento"
+                    <input type="date" id="data_nascimento" name="data_nascimento" required
                            value="{{ old('data_nascimento', isset($dado->usuario->data_nascimento) ? \Carbon\Carbon::parse($dado->usuario->data_nascimento)->format('Y-m-d') : '') }}"
                            class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
                 </div>
+
+                <div>
+                    <label for="foto" class="block text-sm font-semibold text-gray-700 mb-1.5">Foto do técnico</label>
+                    @if($dado->exists && $dado->usuario && $dado->usuario->foto)
+                        <img src="{{ route('usuario.foto', $dado->UserID) }}" alt="Foto de {{ $dado->usuario->nome_razao }}"
+                             class="mb-3 h-20 w-20 rounded-2xl object-cover">
+                    @endif
+                    <input type="file" id="foto" name="foto" accept=".jpg,.jpeg,.png,.webp"
+                           class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm">
+                    <p class="mt-1 text-xs text-gray-500">JPG, PNG ou WEBP; até 5 MB.</p>
+                </div>
+
+                <div>
+                    <label for="habilidades" class="block text-sm font-semibold text-gray-700 mb-1.5">Habilidades *</label>
+                    <textarea id="habilidades" name="habilidades" rows="4" required
+                              placeholder="Uma habilidade por linha"
+                              class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">{{ old('habilidades', $dado->exists ? $dado->habilidades->pluck('descricao')->implode("\n") : '') }}</textarea>
+                    <p class="mt-1 text-xs text-gray-500">Informe cada habilidade em uma linha.</p>
+                </div>
+
+                <section class="rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:p-5 space-y-4">
+                    <div>
+                        <h2 class="text-sm font-bold text-gray-800">Dados bancários para recebimento</h2>
+                        <p class="mt-1 text-xs text-gray-500">A conta será vinculada ao perfil deste técnico.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="banco" class="block text-sm font-semibold text-gray-700 mb-1.5">Banco</label>
+                            <input type="text" id="banco" name="banco" maxlength="55" required
+                                   value="{{ old('banco', optional($dado->dadosBancarios)->banco) }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+                        </div>
+                        <div>
+                            <label for="agencia" class="block text-sm font-semibold text-gray-700 mb-1.5">Agência</label>
+                            <input type="text" id="agencia" name="agencia" maxlength="6" required
+                                   value="{{ old('agencia', optional($dado->dadosBancarios)->agencia) }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="numero_conta" class="block text-sm font-semibold text-gray-700 mb-1.5">Número da conta</label>
+                            <input type="text" id="numero_conta" name="numero_conta" maxlength="16" required
+                                   value="{{ old('numero_conta', optional($dado->dadosBancarios)->numero_conta) }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+                        </div>
+                        <div>
+                            <label for="tipo_conta" class="block text-sm font-semibold text-gray-700 mb-1.5">Tipo de conta</label>
+                            <select id="tipo_conta" name="tipo_conta" required
+                                    class="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+                                <option value="">Selecione</option>
+                                <option value="1" {{ old('tipo_conta', optional($dado->dadosBancarios)->tipo_conta) == 1 ? 'selected' : '' }}>Corrente</option>
+                                <option value="2" {{ old('tipo_conta', optional($dado->dadosBancarios)->tipo_conta) == 2 ? 'selected' : '' }}>Poupança</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="titular" class="block text-sm font-semibold text-gray-700 mb-1.5">Titular da conta</label>
+                            <input type="text" id="titular" name="titular" maxlength="55" required
+                                   value="{{ old('titular', optional($dado->dadosBancarios)->titular ?? ($dado->usuario->nome_razao ?? '')) }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+                        </div>
+                        <div>
+                            <label for="cpf_cnpj_titular" class="block text-sm font-semibold text-gray-700 mb-1.5">CPF/CNPJ do titular</label>
+                            <input type="text" id="cpf_cnpj_titular" name="cpf_cnpj_titular" maxlength="18" required
+                                   value="{{ old('cpf_cnpj_titular', optional($dado->dadosBancarios)->cpf_cnpj_titular ?? ($dado->usuario->cpf_cnpj ?? '')) }}"
+                                   class="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#0047AB] focus:ring-2 focus:ring-[#0047AB]/15 transition">
+                        </div>
+                    </div>
+                </section>
 
                 {{-- Certificado / Documento --}}
                 <div x-data="{ fileName: '', isDragging: false }"
                      @dragover.prevent="isDragging = true"
                      @dragleave.prevent="isDragging = false"
-                     @drop.prevent="isDragging = false; fileName = $event.dataTransfer.files[0]?.name ?? ''">
+                     @drop.prevent="isDragging = false; if ($event.dataTransfer.files.length) { $refs.documento.files = $event.dataTransfer.files; fileName = $event.dataTransfer.files[0].name; }">
 
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">
                         Certificado / Documento Profissional
@@ -146,7 +239,7 @@
                             <p class="text-sm font-semibold text-gray-700" x-text="fileName || 'Clique ou arraste o arquivo aqui'"></p>
                             <p class="text-xs text-gray-400 mt-0.5">PDF, JPG ou PNG · máx. 5 MB</p>
                         </div>
-                        <input id="documento" name="documento" type="file"
+                        <input id="documento" name="documento" type="file" x-ref="documento"
                                accept=".pdf,.jpg,.jpeg,.png"
                                class="sr-only"
                                @change="fileName = $event.target.files[0]?.name ?? ''">
@@ -159,10 +252,7 @@
                         <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         <div>
                             <p class="font-semibold">Dados bancários</p>
-                            <p class="text-xs mt-0.5 text-blue-700">
-                                Os dados bancários do técnico são gerenciados em
-                                <a href="{{ route('dados-bancarios.index') }}" class="font-bold underline">Dados Bancários</a>.
-                            </p>
+                            <p class="text-xs mt-0.5 text-blue-700">Os dados bancários exibidos acima serão atualizados junto com este cadastro.</p>
                         </div>
                     </div>
                 @endif

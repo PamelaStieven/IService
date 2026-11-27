@@ -13,6 +13,10 @@ class ServicoController extends Controller
         $valor = $request->input('valor');
         $tipo  = $request->input('tipo', 'titulo');
 
+        if (!in_array($tipo, ['titulo', 'categoria', 'tecnico'], true)) {
+            $tipo = 'titulo';
+        }
+
         $dados = Servico::with('tecnico.usuario')
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
                 if ($tipo === 'tecnico') {
@@ -24,7 +28,7 @@ class ServicoController extends Controller
                 }
             })->get();
 
-        return view('servico.list', [
+        return view('Servico.list', [
             'dados' => $dados,
             'tipo'  => $tipo,
             'valor' => $valor
@@ -40,18 +44,18 @@ class ServicoController extends Controller
     {
         $dado = new Servico();
         $tecnicos = Tecnicos::with('usuario')->get();
-        return view('servico.form', compact('dado', 'tecnicos'));
+        return view('Servico.form', compact('dado', 'tecnicos'));
     }
 
     private function validateForm(Request $request)
     {
-        $request->validate([
-            'TecnicoID'  => 'required|exists:Tecnicos,TecnicoID',
-            'titulo'     => 'required|string|max:55',
+        return $request->validate([
+            'TecnicoID'  => 'required|exists:tecnicos,TecnicoID',
+            'titulo'     => 'required|string|max:100',
             'categoria'  => 'required|string|max:55',
             'descricao'  => 'nullable|string',
             'preco_base' => 'required|numeric|min:0',
-            'tipo_preco' => 'required|in:hora,Por Serviço',
+            'tipo_preco' => 'required|in:Hora,Por Serviço',
         ], [
             'TecnicoID.required'  => 'Selecione um técnico.',
             'TecnicoID.exists'    => 'Técnico selecionado é inválido.',
@@ -65,34 +69,30 @@ class ServicoController extends Controller
 
     public function store(Request $request)
     {
-        $this->validateForm($request);
+        Servico::create($this->validateForm($request));
 
-        Servico::create($request->all());
-
-        return redirect()->route('servico.index')->with('success', 'Serviço cadastrado com sucesso!');
+        return redirect()->route('servicos.index')->with('success', 'Serviço cadastrado com sucesso!');
     }
 
     public function edit($id)
     {
         $dado = Servico::findOrFail($id);
         $tecnicos = Tecnicos::with('usuario')->get();
-        return view('servico.form', compact('dado', 'tecnicos'));
+        return view('Servico.form', compact('dado', 'tecnicos'));
     }
 
     public function update(Request $request, $id)
     {
-        $this->validateForm($request);
-
         $servico = Servico::findOrFail($id);
-        $servico->update($request->all());
+        $servico->update($this->validateForm($request));
 
-        return redirect()->route('servico.index')->with('success', 'Serviço atualizado com sucesso!');
+        return redirect()->route('servicos.index')->with('success', 'Serviço atualizado com sucesso!');
     }
 
     public function destroy($id)
     {
         Servico::destroy($id);
 
-        return redirect()->route('servico.index')->with('success', 'Serviço removido com sucesso!');
+        return redirect()->route('servicos.index')->with('success', 'Serviço removido com sucesso!');
     }
 }

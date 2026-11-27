@@ -10,6 +10,7 @@ use App\Models\Pagamento;
 use App\Models\LocacaoEquip;
 use App\Models\Habilidade;
 use App\Models\DadosBancarios;
+use App\Models\Enderecos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -35,6 +36,10 @@ class DashboardController extends Controller
             ->orderBy('data_retirada', 'desc')
             ->get();
 
+        $enderecos = Enderecos::where('userID', $user ? $user->UserID : 0)
+            ->orderBy('apelido')
+            ->get();
+
         // Métricas rápidas
         $metricas = [
             'total_agendamentos' => $agendamentos->count(),
@@ -43,7 +48,7 @@ class DashboardController extends Controller
             'total_locacoes'     => $locacoes->count(),
         ];
 
-        return view('dashboard.cliente', compact('user', 'agendamentos', 'locacoes', 'metricas'));
+        return view('dashboard.cliente', compact('user', 'agendamentos', 'locacoes', 'enderecos', 'metricas'));
     }
 
     /**
@@ -123,14 +128,29 @@ class DashboardController extends Controller
             ->groupBy('metodo')
             ->get();
 
+        $pagamentosConfirmados = Pagamento::where('status_pagamento', true);
+        $faturamentoConfirmado = (clone $pagamentosConfirmados)->sum('valor_total');
+        $taxaConfirmada = (clone $pagamentosConfirmados)->sum('taxa_site');
+        $faturamentoMes = (clone $pagamentosConfirmados)
+            ->whereMonth('data_pagamento', now()->month)
+            ->whereYear('data_pagamento', now()->year)
+            ->sum('valor_total');
+        $pagamentosRecentes = Pagamento::with(['agendamento.usuario', 'locacaoEquip.usuario'])
+            ->where('status_pagamento', true)
+            ->orderByDesc('data_pagamento')
+            ->limit(8)
+            ->get();
+
         // Totais gerais para KPI cards
         $kpi = [
             'total_usuarios'     => $totalUsuarios,
             'total_tecnicos'     => $totalTecnicos,
             'total_agendamentos' => Agendamento::count(),
             'total_servicos'     => Servico::count(),
-            'total_faturamento'  => Pagamento::sum('valor_total'),
-            'total_taxa_site'    => Pagamento::sum('taxa_site'),
+            'total_faturamento'  => $faturamentoConfirmado,
+            'total_taxa_site'    => $taxaConfirmada,
+            'total_repasses'     => $faturamentoConfirmado - $taxaConfirmada,
+            'faturamento_mes'    => $faturamentoMes,
         ];
 
         return view('dashboard.graficos', compact(
@@ -141,7 +161,8 @@ class DashboardController extends Controller
             'statusData',
             'categorias',
             'pagamentosMetodo',
-            'kpi'
+            'kpi',
+            'pagamentosRecentes'
         ));
     }
 

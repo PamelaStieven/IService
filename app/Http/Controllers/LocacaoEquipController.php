@@ -14,7 +14,12 @@ class LocacaoEquipController extends Controller
         $valor = $request->input('valor');
         $tipo  = $request->input('tipo', 'UserID');
 
-        $dados = LocacaoEquip::with(['usuario', 'pagamento'])
+        $colunasPermitidas = ['UserID', 'EquipID', 'data_retirada', 'data_devolucao'];
+        if (!in_array($tipo, $colunasPermitidas, true)) {
+            $tipo = 'UserID';
+        }
+
+        $dados = LocacaoEquip::with(['usuario', 'equipamento', 'pagamento'])
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
                 $query->where($tipo, 'like', '%' . $valor . '%');
             })
@@ -42,11 +47,15 @@ class LocacaoEquipController extends Controller
     {
         return $request->validate([
             'UserID'         => 'required|exists:usuario,UserID',
+            'EquipID'        => 'required|exists:equipamentos,EquipID',
             'data_retirada'  => 'required|date',
-            'data_devolucao' => 'nullable|date|after_or_equal:data_retirada',
+            'data_devolucao' => 'required|date|after_or_equal:data_retirada',
         ], [
             'UserID.required'                  => 'Selecione o usuário.',
             'UserID.exists'                    => 'O usuário selecionado é inválido.',
+            'EquipID.required'                 => 'Selecione um equipamento.',
+            'EquipID.exists'                   => 'O equipamento selecionado é inválido.',
+            'data_devolucao.required'          => 'A data da devolução é obrigatória.',
             'data_retirada.required'           => 'A data da retirada é obrigatória.',
             'data_retirada.date'               => 'Informe uma data de retirada válida.',
             'data_devolucao.date'              => 'Informe uma data de devolução válida.',

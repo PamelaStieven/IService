@@ -1,21 +1,19 @@
 @extends('main')
 @section('titulo', 'Agendamentos')
 
-@section('botao_topo')
-    <a href="{{ route('agendamentos.create') }}" class="btn btn-blue-pill shadow-sm">
-        + Novo Agendamento
-    </a>
-@endsection
-
 @section('conteudo')
 
 <div class="container my-3">
+    @include('components.report-actions', ['tipo' => 'agendamentos'])
 
     <!-- Cabeçalho e Barra de Pesquisa -->
     <div class="row align-items-center justify-content-between mb-4 g-3">
         <div class="col-lg-5">
             <h3 class="fw-bold text-dark mb-1">Agendamentos Realizados</h3>
             <p class="text-muted small mb-0">Gerencie os horários, técnicos, serviços e status dos agendamentos.</p>
+            <a href="{{ route('agendamentos.create') }}" class="btn btn-primary btn-sm mt-3">
+                + Novo agendamento
+            </a>
         </div>
 
         <div class="col-lg-7">
@@ -35,11 +33,6 @@
                     </select>
                 </div>
 
-                <div class="d-lg-none">
-                    <a href="{{ route('agendamentos.create') }}" class="btn btn-blue-pill w-100">
-                        + Novo Agendamento
-                    </a>
-                </div>
             </div>
         </div>
     </div>

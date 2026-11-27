@@ -1,32 +1,34 @@
 
 @extends('main')
 
-@section('titulo', isset($data) ? 'Editar Pagamento' : 'Cadastrar Pagamento')
+@php($isEdit = isset($dado) && $dado->exists)
+
+@section('titulo', $isEdit ? 'Editar Pagamento' : 'Cadastrar Pagamento')
 
 @section('conteudo')
 
 <div class="container">
-    <h2>{{ isset($data) ? 'Editar Pagamento' : 'Cadastrar Pagamento' }}</h2>
+    <h2>{{ $isEdit ? 'Editar Pagamento' : 'Cadastrar Pagamento' }}</h2>
 
-    <form action="{{ isset($data) ? route('pagamentos.update', $data->PagamentoID) : route('pagamentos.store') }}"
+    <form action="{{ $isEdit ? route('pagamentos.update', $dado->PagamentoID) : route('pagamentos.store') }}"
           method="POST">
 
         @csrf
 
-        @if(isset($data))
+        @if($isEdit)
             @method('PUT')
         @endif
 
         <div class="mb-3">
-            <label for="AgendaID" class="form-label">Agendamento</label>
+            <label for="AgendamentoID" class="form-label">Agendamento</label>
 
-            <select name="AgendaID" id="AgendaID" class="form-control">
+            <select name="AgendamentoID" id="AgendamentoID" class="form-control">
                 <option value="">Selecione um agendamento</option>
 
                 @foreach($agendamentos as $agendamento)
-                    <option value="{{ $agendamento->AgendaID }}"
-                        {{ old('AgendaID', $data->AgendaID ?? '') == $agendamento->AgendaID ? 'selected' : '' }}>
-                        Agendamento #{{ $agendamento->AgendaID }}
+                    <option value="{{ $agendamento->AgendamentoID }}"
+                        {{ old('AgendamentoID', $dado->AgendamentoID ?? '') == $agendamento->AgendamentoID ? 'selected' : '' }}>
+                        Agendamento #{{ $agendamento->AgendamentoID }}
                     </option>
                 @endforeach
             </select>
@@ -40,7 +42,7 @@
 
                 @foreach($locacoes as $locacao)
                     <option value="{{ $locacao->LocEquipID }}"
-                        {{ old('LocEquipID', $data->LocEquipID ?? '') == $locacao->LocEquipID ? 'selected' : '' }}>
+                        {{ old('LocEquipID', $dado->LocEquipID ?? '') == $locacao->LocEquipID ? 'selected' : '' }}>
                         Locação #{{ $locacao->LocEquipID }}
                     </option>
                 @endforeach
@@ -55,7 +57,7 @@
 
                 @foreach(['PIX', 'Boleto'] as $metodo)
                     <option value="{{ $metodo }}"
-                        {{ old('metodo', $data->metodo ?? '') == $metodo ? 'selected' : '' }}>
+                        {{ old('metodo', $dado->metodo ?? '') == $metodo ? 'selected' : '' }}>
                         {{ $metodo }}
                     </option>
                 @endforeach
@@ -67,7 +69,7 @@
 
             <input type="number" name="valor_total" id="valor_total"
                    class="form-control" step="0.01" min="0"
-                   value="{{ old('valor_total', $data->valor_total ?? '') }}" required>
+                   value="{{ old('valor_total', $dado->valor_total ?? '') }}" required>
         </div>
 
         <div class="mb-3">
@@ -75,7 +77,7 @@
 
             <input type="number" name="taxa_site" id="taxa_site"
                    class="form-control" step="0.1" min="0"
-                   value="{{ old('taxa_site', $data->taxa_site ?? '') }}" required>
+                   value="{{ old('taxa_site', $dado->taxa_site ?? '') }}" required>
         </div>
 
         <div class="mb-3">
@@ -84,17 +86,14 @@
             <select name="status_pagamento" id="status_pagamento" class="form-control" required>
                 <option value="">Selecione o status</option>
 
-                <option value="0" {{ old('status_pagamento', $data->status_pagamento ?? '') == 0 ? 'selected' : '' }}>
+                <option value="0" {{ old('status_pagamento', $dado->status_pagamento ?? '') == 0 ? 'selected' : '' }}>
                     Pendente
                 </option>
 
-                <option value="1" {{ old('status_pagamento', $data->status_pagamento ?? '') == 1 ? 'selected' : '' }}>
+                <option value="1" {{ old('status_pagamento', $dado->status_pagamento ?? '') == 1 ? 'selected' : '' }}>
                     Pago
                 </option>
 
-                <option value="2" {{ old('status_pagamento', $data->status_pagamento ?? '') == 2 ? 'selected' : '' }}>
-                    Cancelado
-                </option>
             </select>
         </div>
 
@@ -103,11 +102,11 @@
 
             <input type="datetime-local" name="data_pagamento" id="data_pagamento"
                    class="form-control"
-                   value="{{ old('data_pagamento', isset($data) ? date('Y-m-d\TH:i', strtotime($data->data_pagamento)) : '') }}"
+                   value="{{ old('data_pagamento', $isEdit ? date('Y-m-d\TH:i', strtotime($dado->data_pagamento)) : '') }}"
                    required>
         </div>
 
-        <button type="submit" class="btn btn-success">
+        <button type="submit" class="btn btn-primary">
             Salvar
         </button>
 

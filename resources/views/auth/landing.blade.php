@@ -82,6 +82,7 @@
             <a href="#servicos" @click="mobileMenu = false" class="block py-2 text-slate-700 font-medium">Serviços</a>
             <a href="#como-funciona" @click="mobileMenu = false" class="block py-2 text-slate-700 font-medium">Como Funciona</a>
             <a href="#profissionais" @click="mobileMenu = false" class="block py-2 text-slate-700 font-medium">Para Profissionais</a>
+            <a href="#sobre" @click="mobileMenu = false" class="block py-2 text-slate-700 font-medium">Sobre Nós</a>
             <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
                 <a href="{{ route('register.usuario') }}" class="w-full text-center py-2.5 text-sm font-bold text-cobalto bg-diamante-suave rounded-xl">
                     Cadastrar como Usuário
@@ -351,6 +352,33 @@
         </div>
     </section>
 
+    <section id="como-funciona" class="py-16 bg-slate-50 border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-2xl mb-8">
+                <span class="text-xs font-extrabold uppercase tracking-widest text-cobalto">Simples e direto</span>
+                <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Como funciona</h2>
+                <p class="text-slate-600 mt-2">Do primeiro contato à conclusão do serviço, acompanhe tudo em um só lugar.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <article class="bg-white border border-slate-200 rounded-2xl p-5">
+                    <span class="text-sm font-bold text-cobalto">01</span>
+                    <h3 class="font-bold text-slate-900 mt-2">Escolha o serviço</h3>
+                    <p class="text-sm text-slate-600 mt-1">Encontre o atendimento ou equipamento adequado à sua necessidade.</p>
+                </article>
+                <article class="bg-white border border-slate-200 rounded-2xl p-5">
+                    <span class="text-sm font-bold text-cobalto">02</span>
+                    <h3 class="font-bold text-slate-900 mt-2">Agende com um técnico</h3>
+                    <p class="text-sm text-slate-600 mt-1">Combine o horário e acompanhe o andamento do agendamento.</p>
+                </article>
+                <article class="bg-white border border-slate-200 rounded-2xl p-5">
+                    <span class="text-sm font-bold text-cobalto">03</span>
+                    <h3 class="font-bold text-slate-900 mt-2">Acompanhe até concluir</h3>
+                    <p class="text-sm text-slate-600 mt-1">Consulte o histórico e os detalhes da solicitação no seu painel.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
     <!-- SEÇÃO PARA TÉCNICOS PARCEIROS (BANNER CTA) -->
     <section id="profissionais" class="py-16 bg-slate-900 text-white relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -379,7 +407,7 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-100 py-12 text-sm text-slate-500">
+    <footer id="sobre" class="bg-white border-t border-slate-100 py-12 text-sm text-slate-500">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="flex items-center gap-2.5">
                 <div class="w-8 h-8 rounded-lg bg-cobalto flex items-center justify-center text-white font-bold text-sm">
@@ -388,6 +416,10 @@
                 <span class="font-bold text-lg text-slate-900">IService</span>
                 <span class="text-xs text-slate-400 ml-2">&copy; {{ date('Y') }} Todos os direitos reservados.</span>
             </div>
+
+            <p class="max-w-md text-center md:text-left text-xs leading-relaxed">
+                A IService conecta clientes, técnicos e equipamentos em um único fluxo de atendimento.
+            </p>
 
             <div class="flex items-center gap-6 text-xs font-semibold text-slate-600">
                 <a href="{{ route('register.usuario') }}" class="hover:text-cobalto transition">Cadastro de Usuário</a>

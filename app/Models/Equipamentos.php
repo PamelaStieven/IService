@@ -10,12 +10,16 @@ class Equipamentos extends Model
     use HasFactory;
 
     protected $table = 'equipamentos';
+    protected $primaryKey = 'EquipID';
 
     protected $fillable = [
         'UserID',
         'nome',
         'modelo',
         'descricao_tecnica',
+        'estado_conservacao',
+        'valor_diaria',
+        'imagem',
         'data_compra',
         'valor_aluguel',
         'status',
