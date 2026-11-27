@@ -22,7 +22,7 @@ class AgendamentoController extends Controller
         if (!in_array($tipo, $colunasPermitidas, true)) {
             $tipo = 'status_servico';
         }
-
+        //condição da consulta
         $dados = Agendamento::with(['tecnico.usuario', 'servico', 'usuario'])
             ->when(!empty($valor), function ($query) use ($tipo, $valor) {
                 $query->where($tipo, 'like', '%' . $valor . '%');
